@@ -1,5 +1,6 @@
 import { Element, Component, Host, h } from '@stencil/core';
-import * as d3 from "d3";
+import * as d3 from 'd3';
+
 
 @Component({
   tag: 'd3js-web-component',
@@ -24,7 +25,7 @@ export class D3jsWebComponent {
       height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
-      var svg = d3.select(this.element.shadowRoot.querySelector("#svg"))
+      let svg = d3.select(this.element.shadowRoot.querySelector("#svg"))
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -33,7 +34,7 @@ export class D3jsWebComponent {
           "translate(" + margin.left + "," + margin.top + ")");
 
       // X axis: scale and draw:
-      var x = d3.scaleLinear()
+      let x = d3.scaleLinear()
         .domain([0, 1000])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
           .range([0, width]);
         svg.append("g")
@@ -41,16 +42,16 @@ export class D3jsWebComponent {
           .call(d3.axisBottom(x));
           
       // set the parameters for the histogram
-      var histogram = d3.histogram()
+      let histogram = d3.histogram()
         .value(function(d) { return d.price; })   // I need to give the vector of value
         .domain(x.domain())  // then the domain of the graphic
         .thresholds(x.ticks(70)); // then the numbers of bins
           
       // And apply this function to data to get the bins
-      var bins = histogram(this.data);
+      let bins = histogram(this.data);
           
         // Y axis: scale and draw:
-      var y = d3.scaleLinear()
+      let y = d3.scaleLinear()
         .range([height, 0]);
         y.domain([0, d3.max(bins, function(d) { return d.length; })]);   // d3.hist has to be called before the Y axis obviously
         svg.append("g")
