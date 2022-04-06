@@ -6,56 +6,51 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
+    interface FetchData {
+    }
+    interface ParallelGraph {
+        "data": string;
+        "height": number;
+        "width": number;
     }
 }
 declare global {
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLFetchDataElement extends Components.FetchData, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    var HTMLFetchDataElement: {
+        prototype: HTMLFetchDataElement;
+        new (): HTMLFetchDataElement;
+    };
+    interface HTMLParallelGraphElement extends Components.ParallelGraph, HTMLStencilElement {
+    }
+    var HTMLParallelGraphElement: {
+        prototype: HTMLParallelGraphElement;
+        new (): HTMLParallelGraphElement;
     };
     interface HTMLElementTagNameMap {
-        "my-component": HTMLMyComponentElement;
+        "fetch-data": HTMLFetchDataElement;
+        "parallel-graph": HTMLParallelGraphElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface FetchData {
+    }
+    interface ParallelGraph {
+        "data"?: string;
+        "height"?: number;
+        "width"?: number;
     }
     interface IntrinsicElements {
-        "my-component": MyComponent;
+        "fetch-data": FetchData;
+        "parallel-graph": ParallelGraph;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "fetch-data": LocalJSX.FetchData & JSXBase.HTMLAttributes<HTMLFetchDataElement>;
+            "parallel-graph": LocalJSX.ParallelGraph & JSXBase.HTMLAttributes<HTMLParallelGraphElement>;
         }
     }
 }
