@@ -26,6 +26,7 @@ export class FetchData {
 
   private analiseData() {
     let json = JSON.parse(this.getData());
+    this.artist = json["name"];
     let albums = json["albums"];
     albums.forEach(album => {
       this.albumGenres = [this.albumGenres, album["genre"]];
@@ -44,7 +45,7 @@ export class FetchData {
         this.songList = [this.songList, song["title"]];
       });
     });
-    this.occurencesCalculator();
+    //this.occurencesCalculator();
   }
 
   private occurencesCalculator() {
@@ -80,7 +81,8 @@ export class FetchData {
   render() {
     return (
       <Host>
-        <h1>Artist/Group Name</h1> {this.analiseData()}
+        {this.analiseData()}
+        <h1>Artist/Group Name</h1> {this.artist}
         <h1>Song List</h1> {this.songList}<br/><br/><br/>
         <h1>Languages</h1> {this.songLanguages}
         <h1>Genres</h1> {this.albumGenres}
