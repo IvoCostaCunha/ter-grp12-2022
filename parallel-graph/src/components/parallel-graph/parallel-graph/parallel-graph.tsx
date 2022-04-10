@@ -1,10 +1,5 @@
 import { Element, Component, Host, Prop, h } from '@stencil/core';
 import { select } from 'd3-selection';
-import { pie, arc } from 'd3-shape';
-
-import { scaleOrdinal } from 'd3-scale';
-import { quantize } from 'd3-interpolate';
-import { interpolateCool } from 'd3-scale-chromatic';
 import * as d3 from "d3";
 @Component({
   tag: 'parallel-graph',
@@ -13,8 +8,8 @@ import * as d3 from "d3";
 })
 export class MyComponent {
   @Element() element: HTMLElement;
-  @Prop() width: number = 6000;
-  @Prop() height: number = 6000;
+  @Prop() width: number = 1000 ;
+  @Prop() height: number = 1000;
   @Prop() data: string = "[]";
 
   public chartData: any;
@@ -41,17 +36,25 @@ export class MyComponent {
   
   // Parse the Data
   d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv").then( function(data) {
-
+console.log(data)
   // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
- const dimensions = Object.keys(data[0]).filter(function(d) { return d != "Species" })
-
+ const dimensions = Object.keys(data[0]).filter(function(d) { return d  })
+//console.log(dimensions)
   // For each dimension, I build a linear scale. I store all in a y object
   const y = {}
   for (var i in dimensions) {
     const name = dimensions[i]
-    y[name] = d3.scaleLinear()
-      .domain( d3.extent(data, function(d) { return +d[name]; }) )
+    if (name !="Species"){
+    y[name] = d3.scaleLinear()// scale point
+      .domain( d3.extent(data, function(d) {return +d[name]; }) ) // 
       .range([height, 20])
+    }
+    else{
+      y[name] = d3.scalePoint()// scale point
+      .domain( d3.extent(data, function(d) { console.log(d[name]) ;return d[name]; }) ) // 
+      .range([height, 10])
+    }
+
   }
 
   // Build the X scale -> it find the best position for each Y axis
@@ -64,7 +67,7 @@ export class MyComponent {
   function path(d) {
       return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
   }
-
+//console.log(data)
   // Draw the lines
   svg
     .selectAll("myPath")
@@ -76,6 +79,7 @@ export class MyComponent {
     .style("opacity", 0.5)
 
   // Draw the axis:
+ 
   svg.selectAll("myAxis")
     // For each dimension of the dataset I add a 'g' element:
     .data(dimensions).enter()
