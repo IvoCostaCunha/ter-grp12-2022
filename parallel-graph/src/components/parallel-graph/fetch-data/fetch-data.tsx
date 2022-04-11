@@ -38,7 +38,7 @@ export class FetchData {
   private analiseData() {
 
     let json = JSON.parse(this.getData());
-    //this.artist = json["name"];
+    this.artist = json["name"];
     this.dataObj.artist = json["name"];
     let albums = json["albums"];
 
@@ -64,7 +64,13 @@ export class FetchData {
 
         // We test if genre ins defined in the song otherwise we use album genre
         if(song.hasOwnProperty("genre")) {
-          let genre = song["genre"];
+          let genreArray = song["genre"];
+          let genre = {};
+          let i = 0;
+          genreArray.forEach(g => {
+            genre[i] = g;
+            i++;
+          });
           songObj["genre"] = genre;
         }
         else{
@@ -79,7 +85,13 @@ export class FetchData {
 
         // We test if format is defined otherwise we set it undefined
         if(song.hasOwnProperty("format")) {
-          let format = song["format"];
+          let formatArray = song["format"];
+          let format = {};
+          let i = 0;
+          formatArray.forEach(f => {
+            format[i] = f;
+            i++;
+          });
           songObj["format"]  = format;
         }
         else {
@@ -101,7 +113,7 @@ export class FetchData {
         index++;
       });
     });
-    console.log(this.dataObj);
+    //console.log(this.dataObj);
   }
 
   private convertLengthToInt() {
@@ -117,7 +129,7 @@ export class FetchData {
   private getSongs(dataObj) {
     let songs = {};
     for(let i=1; i<=Object.keys(dataObj).length-1; i++) {
-      songs[i] = this.dataObj[i]
+      songs[i] = this.dataObj[i];
     }
     return songs;
   }
@@ -126,7 +138,14 @@ export class FetchData {
     let value = "";
     Object.keys(obj).forEach(obj2 => {
       // obj2 is 1 2 3 ect here so the index ! It's not an object !
-      value = value + obj[obj2][attribute] + " - ";
+      console.log(obj[obj2][attribute])
+
+      if(Object.keys(obj[obj2][attribute]) == undefined) {
+        value = value + obj[obj2][attribute] + " - ";
+      }
+      else {
+        value = value + obj[obj2][attribute] + " - ";
+      }
     })
     return value
   }
