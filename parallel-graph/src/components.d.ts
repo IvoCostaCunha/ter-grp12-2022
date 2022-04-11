@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface FetchData {
-        "artist": string;
+        "artist": any;
     }
     interface ParallelGraph {
         "data": string;
@@ -35,7 +35,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface FetchData {
-        "artist"?: string;
+        "artist"?: any;
     }
     interface ParallelGraph {
         "data"?: string;
