@@ -38,7 +38,7 @@ export class FetchData {
   private analiseData() {
 
     let json = JSON.parse(this.getData());
-    //this.artist = json["name"];
+    this.artist = json["name"];
     this.dataObj.artist = json["name"];
     let albums = json["albums"];
 
@@ -62,7 +62,7 @@ export class FetchData {
           songObj.length = undefined;
         }
 
-        // We test if genre ins defined in the song otherwise we use album genre
+        // We test if genre is defined in the song otherwise we use album genre
         if(song.hasOwnProperty("genre")) {
           let genre = song["genre"];
           songObj["genre"] = genre;
