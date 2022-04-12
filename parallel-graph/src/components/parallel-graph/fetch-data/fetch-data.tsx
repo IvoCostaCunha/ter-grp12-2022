@@ -19,7 +19,7 @@ export class FetchData {
 
   }
 
-  private httpGet(url) {
+  private httpGet(url): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false); 
     xmlHttpReq.send(null);
@@ -64,7 +64,13 @@ export class FetchData {
 
         // We test if genre is defined in the song otherwise we use album genre
         if(song.hasOwnProperty("genre")) {
-          let genre = song["genre"];
+          let genreArray = song["genre"];
+          let genre = {};
+          let i = 0;
+          genreArray.forEach(g => {
+            genre[i] = g;
+            i++;
+          });
           songObj["genre"] = genre;
         }
         else{
@@ -79,7 +85,13 @@ export class FetchData {
 
         // We test if format is defined otherwise we set it undefined
         if(song.hasOwnProperty("format")) {
-          let format = song["format"];
+          let formatArray = song["format"];
+          let format = {};
+          let i = 0;
+          formatArray.forEach(f => {
+            format[i] = f;
+            i++;
+          });
           songObj["format"]  = format;
         }
         else {
@@ -101,10 +113,10 @@ export class FetchData {
         index++;
       });
     });
-    console.log(this.dataObj);
+    //console.log(this.dataObj);
   }
 
-  private convertLengthToInt() {
+  private convertLengthToInt(): void {
     this.dataObjInt = this.dataObj;
     for(let i=1; i<=Object.keys(this.dataObjInt).length-1; i++) {
       if(this.dataObjInt[i].length != undefined) {
@@ -114,19 +126,27 @@ export class FetchData {
     console.log(this.dataObjInt);
   }
 
-  private getSongs(dataObj) {
+  private getSongs(dataObj: object) {
     let songs = {};
     for(let i=1; i<=Object.keys(dataObj).length-1; i++) {
-      songs[i] = this.dataObj[i]
+      songs[i] = this.dataObj[i];
     }
     return songs;
   }
 
-  private printAttributeValues(obj, attribute: string): string {
+  // Not functionnal for inside objects yet !
+  private printAttributeValues(obj: object, attribute: string): string {
     let value = "";
-    Object.keys(obj).forEach(obj2 => {
-      // obj2 is 1 2 3 ect here so the index ! It's not an object !
-      value = value + obj[obj2][attribute] + " - ";
+    Object.keys(obj).forEach(index => {
+      // index is 1 2 3 ect here so the index ! It's not an object !
+      console.log(obj[index][attribute])
+
+      if(Object.keys(obj[index][attribute]) == undefined) {
+        value = value + obj[index][attribute] + " - ";
+      }
+      else {
+        value = value + obj[index][attribute] + " - ";
+      }
     })
     return value
   }
@@ -142,7 +162,7 @@ export class FetchData {
         <h1>Languages</h1> 
         {this.printAttributeValues(this.getSongs(this.dataObj), "language")}
         <h1>Genres</h1> 
-        {this.printAttributeValues(this.getSongs(this.dataObj), "genre")}
+        
         <br/><br/><br/>
         <h1>Raw JSON</h1> 
       </Host>
