@@ -19,7 +19,7 @@ export class FetchData {
 
   }
 
-  private httpGet(url) {
+  private httpGet(url): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false); 
     xmlHttpReq.send(null);
@@ -116,7 +116,7 @@ export class FetchData {
     //console.log(this.dataObj);
   }
 
-  private convertLengthToInt() {
+  private convertLengthToInt(): void {
     this.dataObjInt = this.dataObj;
     for(let i=1; i<=Object.keys(this.dataObjInt).length-1; i++) {
       if(this.dataObjInt[i].length != undefined) {
@@ -126,7 +126,7 @@ export class FetchData {
     console.log(this.dataObjInt);
   }
 
-  private getSongs(dataObj) {
+  private getSongs(dataObj: object) {
     let songs = {};
     for(let i=1; i<=Object.keys(dataObj).length-1; i++) {
       songs[i] = this.dataObj[i];
@@ -134,17 +134,17 @@ export class FetchData {
     return songs;
   }
 
-  private printAttributeValues(obj, attribute: string): string {
+  private printAttributeValues(obj: object, attribute: string): string {
     let value = "";
-    Object.keys(obj).forEach(obj2 => {
-      // obj2 is 1 2 3 ect here so the index ! It's not an object !
-      console.log(obj[obj2][attribute])
+    Object.keys(obj).forEach(index => {
+      // index is 1 2 3 ect here so the index ! It's not an object !
+      console.log(obj[index][attribute])
 
-      if(Object.keys(obj[obj2][attribute]) == undefined) {
-        value = value + obj[obj2][attribute] + " - ";
+      if(Object.keys(obj[index][attribute]) == undefined) {
+        value = value + obj[index][attribute] + " - ";
       }
       else {
-        value = value + obj[obj2][attribute] + " - ";
+        value = value + obj[index][attribute] + " - ";
       }
     })
     return value
@@ -161,7 +161,7 @@ export class FetchData {
         <h1>Languages</h1> 
         {this.printAttributeValues(this.getSongs(this.dataObj), "language")}
         <h1>Genres</h1> 
-        {this.printAttributeValues(this.getSongs(this.dataObj), "genre")}
+        
         <br/><br/><br/>
         <h1>Raw JSON</h1> 
       </Host>
