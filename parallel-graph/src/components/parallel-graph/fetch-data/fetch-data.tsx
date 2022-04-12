@@ -19,7 +19,7 @@ export class FetchData {
 
   }
 
-  private httpGet(url): string {
+  private httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false); 
     xmlHttpReq.send(null);
@@ -113,7 +113,9 @@ export class FetchData {
         index++;
       });
     });
-    //console.log(this.dataObj);
+
+    console.log("dataObj -> ")
+    console.log(this.dataObj);
   }
 
   private convertLengthToInt(): void {
@@ -123,6 +125,7 @@ export class FetchData {
         this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);    
       }
     }
+    console.log("dataObjInt -> ")
     console.log(this.dataObjInt);
   }
 
@@ -139,7 +142,7 @@ export class FetchData {
     let value = "";
     Object.keys(obj).forEach(index => {
       // index is 1 2 3 ect here so the index ! It's not an object !
-      console.log(obj[index][attribute])
+      //console.log(obj[index][attribute])
 
       // A way to deal with reading undefined as an object ?
       if(obj[index][attribute] != undefined) {
