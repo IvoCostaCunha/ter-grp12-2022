@@ -134,6 +134,7 @@ export class FetchData {
     return songs;
   }
 
+  // Not functionnal for inside objects yet !
   private printAttributeValues(obj: object, attribute: string): string {
     let value = "";
     Object.keys(obj).forEach(index => {
