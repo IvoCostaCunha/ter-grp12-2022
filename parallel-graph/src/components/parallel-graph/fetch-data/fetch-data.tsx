@@ -141,12 +141,29 @@ export class FetchData {
       // index is 1 2 3 ect here so the index ! It's not an object !
       console.log(obj[index][attribute])
 
-      if(Object.keys(obj[index][attribute]) == undefined) {
+      // A way to deal with reading undefined as an object ?
+      try {
+        if(Object.keys(obj[index][attribute]).length <= 1) {
+          Object.keys(obj[index][attribute]).forEach(e => {
+            value = value + e + " - ";
+          });
+        }
+        else {
+          value = value + obj[index][attribute] + " - ";
+        }
+      } 
+      
+      catch(error) {
+        value = value + obj[index][attribute] + " - ";
+      }
+
+
+      /*if(Object.keys(obj[index][attribute]) == undefined) {
         value = value + obj[index][attribute] + " - ";
       }
       else {
         value = value + obj[index][attribute] + " - ";
-      }
+      }*/
     })
     return value
   }
