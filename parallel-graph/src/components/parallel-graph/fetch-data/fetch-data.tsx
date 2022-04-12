@@ -142,6 +142,22 @@ export class FetchData {
       console.log(obj[index][attribute])
 
       // A way to deal with reading undefined as an object ?
+      if(obj[index][attribute] != undefined) {
+        if(Object.keys(obj[index][attribute]).length <= 1) {
+          Object.keys(obj[index][attribute]).forEach(e => {
+            value = value + e + " - ";
+          });
+        }
+        else {
+          value = value + obj[index][attribute] + " - ";
+        }
+      }
+      else {
+        value = value + obj[index][attribute] + " - ";
+      }
+
+      /*
+      // A bad way to deal with reading undefined as an object ?
       try {
         if(Object.keys(obj[index][attribute]).length <= 1) {
           Object.keys(obj[index][attribute]).forEach(e => {
@@ -158,7 +174,7 @@ export class FetchData {
       }
 
 
-      /*if(Object.keys(obj[index][attribute]) == undefined) {
+      if(Object.keys(obj[index][attribute]) == undefined) {
         value = value + obj[index][attribute] + " - ";
       }
       else {
