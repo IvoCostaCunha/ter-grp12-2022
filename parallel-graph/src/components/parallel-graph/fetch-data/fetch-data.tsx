@@ -80,7 +80,6 @@ export class FetchData {
           else {
             songObj["genre"] = undefined;
           }
-          
         }
 
         // We test if format is defined otherwise we set it undefined
@@ -113,7 +112,8 @@ export class FetchData {
         index++;
       });
     });
-    //console.log(this.dataObj);
+    console.log("dataObj -> ");
+    console.log(this.dataObj);
   }
 
   private convertLengthToInt(): void {
@@ -123,6 +123,7 @@ export class FetchData {
         this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);    
       }
     }
+    console.log("dataObjInt -> ");
     console.log(this.dataObjInt);
   }
 
@@ -139,7 +140,7 @@ export class FetchData {
     let value = "";
     Object.keys(obj).forEach(index => {
       // index is 1 2 3 ect here so the index ! It's not an object !
-      console.log(obj[index][attribute])
+      // console.log(obj[index][attribute])
 
       if(Object.keys(obj[index][attribute]) == undefined) {
         value = value + obj[index][attribute] + " - ";
