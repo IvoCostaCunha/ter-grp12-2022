@@ -36,7 +36,7 @@ export class MyComponent {
   
   // Parse the Data
   d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv").then( function(data) {
-console.log(data)
+console.log(data.Species)
   // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
  const dimensions = Object.keys(data[0]).filter(function(d) { return d  })
 //console.log(dimensions)
@@ -51,8 +51,8 @@ console.log(data)
     }
     else{
       y[name] = d3.scalePoint()// scale point
-      .domain( d3.extent(data, function(d) { console.log(d[name]) ;return d[name]; }) ) // 
-      .range([height, 10])
+      .domain( ["setosa","versicolor", "virginica"]/*d3.extent(data, function(d) { console.log(d["Species"]) ;return d["Species"]; }) */) // 
+      .range([height, 20])
     }
 
   }
