@@ -16,10 +16,10 @@ export class FetchData {
     this.analiseData();
     this.convertLengthToInt();
     this.getSongs(this.dataObj);
-
+    this.getDataPhaseA(this.dataObj);
   }
 
-  private httpGet(url): string {
+  private httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false); 
     xmlHttpReq.send(null);
@@ -32,6 +32,7 @@ export class FetchData {
     }
     catch(error) {
       console.log(error);
+      alert("Data not received due to : " + error);
     } 
   }
 
@@ -112,7 +113,8 @@ export class FetchData {
         index++;
       });
     });
-    console.log("dataObj -> ");
+
+    console.log("dataObj -> ")
     console.log(this.dataObj);
   }
 
@@ -123,7 +125,7 @@ export class FetchData {
         this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);    
       }
     }
-    console.log("dataObjInt -> ");
+    console.log("dataObjInt -> ")
     console.log(this.dataObjInt);
   }
 
@@ -135,19 +137,98 @@ export class FetchData {
     return songs;
   }
 
+  private getDataPhaseA(dataObj: object) {
+    let songs = this.getSongs(dataObj);
+    let songsA = {};
+
+    Object.keys(songs).forEach(index => {
+      let song = {};
+
+      song["title"] = songs[index]["title"];
+
+      if(songs[index]["language"] != undefined) {
+        song["language"] = songs[index]["language"];
+      }
+      else {
+        song["language"] = undefined;
+      }
+
+      if(songs[index]["length"] != undefined) {
+        song["length"] = songs[index]["length"];
+      }
+      else {
+        song["length"] = undefined;
+      }
+
+      if(songs[index]["format"] != undefined) {
+        song["format"] = songs[index]["format"][0];
+      }
+      else {
+        song["format"] = undefined;
+      }
+
+      if(songs[index]["genre"] != undefined) {
+        song["genre"] = songs[index]["genre"][0];
+      }
+      else {
+        song["genre"] = undefined;
+      }
+
+      song["isClassic"] = songs[index]["isClassic"];
+      songsA[index] = song;
+    })
+
+    console.log("songsA ->");
+    console.log(songsA);
+    return songsA;
+  }
+
   // Not functionnal for inside objects yet !
   private printAttributeValues(obj: object, attribute: string): string {
     let value = "";
     Object.keys(obj).forEach(index => {
       // index is 1 2 3 ect here so the index ! It's not an object !
-      // console.log(obj[index][attribute])
+
+      //console.log(obj[index][attribute])
+
+      // A way to deal with reading undefined as an object ?
+      if(obj[index][attribute] != undefined) {
+        if(Object.keys(obj[index][attribute]).length <= 1) {
+          Object.keys(obj[index][attribute]).forEach(e => {
+            value = value + e + " - ";
+          });
+        }
+        else {
+          value = value + obj[index][attribute] + " - ";
+        }
+      }
+      else {
+        value = value + obj[index][attribute] + " - ";
+      }
+
+      /*
+      // A bad way to deal with reading undefined as an object ?
+      try {
+        if(Object.keys(obj[index][attribute]).length <= 1) {
+          Object.keys(obj[index][attribute]).forEach(e => {
+            value = value + e + " - ";
+          });
+        }
+        else {
+          value = value + obj[index][attribute] + " - ";
+        }
+      } 
+      
+      catch(error) {
+        value = value + obj[index][attribute] + " - ";
+      }
 
       if(Object.keys(obj[index][attribute]) == undefined) {
         value = value + obj[index][attribute] + " - ";
       }
       else {
         value = value + obj[index][attribute] + " - ";
-      }
+      }*/
     })
     return value
   }
