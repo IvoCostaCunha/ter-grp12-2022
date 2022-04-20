@@ -145,6 +145,8 @@ export class FetchData {
     Object.keys(songs).forEach(index => {
       let song = {};
 
+      song["title"] = songs[index]["title"];
+
       if(songs[index]["language"] != undefined) {
         song["language"] = songs[index]["language"];
       }
