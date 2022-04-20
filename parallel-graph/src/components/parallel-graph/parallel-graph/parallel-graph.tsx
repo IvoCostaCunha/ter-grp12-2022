@@ -155,7 +155,7 @@ export class MyComponent {
 
   private getDataPhaseA(dataObj: object) {
     let songs = this.getSongs(dataObj);
-    let songsA = {};
+    let songsA = [];
 
     Object.keys(songs).forEach(index => {
       let song = {};
@@ -166,32 +166,32 @@ export class MyComponent {
         song["language"] = songs[index]["language"];
       }
       else {
-        song["language"] = undefined;
+        song["language"] = "undefined";
       }
 
       if(songs[index]["length"] != undefined) {
         song["length"] = songs[index]["length"];
       }
       else {
-        song["length"] = undefined;
+        song["length"] = "undefined";
       }
 
       if(songs[index]["format"] != undefined) {
         song["format"] = songs[index]["format"][0];
       }
       else {
-        song["format"] = undefined;
+        song["format"] = "undefined";
       }
 
       if(songs[index]["genre"] != undefined) {
         song["genre"] = songs[index]["genre"][0];
       }
       else {
-        song["genre"] = undefined;
+        song["genre"] = "undefined";
       }
 
       song["isClassic"] = songs[index]["isClassic"];
-      songsA[index] = song;
+      songsA.push(song);
     })
 
     console.log("songsA ->");
@@ -248,7 +248,7 @@ export class MyComponent {
     })
     return value
   }
-  
+
   buildParalleGraph(svg){
     var margin = {top: 10, right: 10, bottom: 10, left: 0},
     width = 1000 - margin.left - margin.right,
@@ -291,7 +291,7 @@ console.log(data.Species)
   function path(d) {
       return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
   }
-//console.log(data)
+  console.log(data)
   // Draw the lines
   svg
     .selectAll("myPath")
