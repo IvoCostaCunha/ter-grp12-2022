@@ -16,7 +16,7 @@ export class FetchData {
     this.analiseData();
     this.convertLengthToInt();
     this.getSongs(this.dataObj);
-
+    this.getDataPhaseA(this.dataObj);
   }
 
   private httpGet(url: string): string {
@@ -32,6 +32,7 @@ export class FetchData {
     }
     catch(error) {
       console.log(error);
+      alert("Data not received due to : " + error);
     } 
   }
 
@@ -135,6 +136,50 @@ export class FetchData {
       songs[i] = this.dataObj[i];
     }
     return songs;
+  }
+
+  private getDataPhaseA(dataObj: object) {
+    let songs = this.getSongs(dataObj);
+    let songsA = {};
+
+    Object.keys(songs).forEach(index => {
+      let song = {};
+
+      if(songs[index]["language"] != undefined) {
+        song["language"] = songs[index]["language"];
+      }
+      else {
+        song["language"] = undefined;
+      }
+
+      if(songs[index]["length"] != undefined) {
+        song["length"] = songs[index]["length"];
+      }
+      else {
+        song["length"] = undefined;
+      }
+
+      if(songs[index]["format"] != undefined) {
+        song["format"] = songs[index]["format"][0];
+      }
+      else {
+        song["format"] = undefined;
+      }
+
+      if(songs[index]["genre"] != undefined) {
+        song["genre"] = songs[index]["genre"][0];
+      }
+      else {
+        song["genre"] = undefined;
+      }
+
+      song["isClassic"] = songs[index]["isClassic"];
+      songsA[index] = song;
+    })
+
+    console.log("songsA ->");
+    console.log(songsA);
+    return songsA;
   }
 
   // Not functionnal for inside objects yet !
