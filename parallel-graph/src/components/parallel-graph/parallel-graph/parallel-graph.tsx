@@ -176,14 +176,14 @@ export class MyComponent {
         song["length"] = 0;
       }
 
-      if (songs[index]["format"] != undefined) {
+      if (songs[index]["format"] && Object.keys(songs[index]["format"]).length) {
         song["format"] = songs[index]["format"][0];
       }
       else {
         song["format"] = "undefined";
       }
 
-      if (songs[index]["genre"] != undefined) {
+      if (songs[index]["genre"] && Object.keys(songs[index]["genre"]).length) {
         song["genre"] = songs[index]["genre"][0];
       }
       else {
@@ -191,13 +191,13 @@ export class MyComponent {
       }
 
       song["isClassic"] = songs[index]["isClassic"];
-      /*if(songs[index]["isClassic"]==true){
+      if(songs[index]["isClassic"]==true){
         console.log("je suis dedans")
-        songs[index]["isClassic"]="true"
+        song["isClassic"]="true"
       }
       else{
-        songs[index]["isClassic"]="false"
-      }*/
+        song["isClassic"]="false"
+      }
       songsA.push(song);
     })
 
@@ -280,18 +280,23 @@ export class MyComponent {
     const title = [];
     const format = [];
     const genre = [];
+    const isClassic= [];
+    const language=[]
     for (var t = 0; t < data1.length; t++) {
 
       title.push(data1[t].title)
       format.push(data1[t].format)
       genre.push(data1[t].genre)
-
+      isClassic.push(data1[t].isClassic)
+      language.push(data1[t].language)
 
     }
     console.log("je suis la 2")
     console.log(format)
     console.log(genre)
     console.log(title);
+    console.log(isClassic)
+
     console.log(data1[1].length)
 
     for (var i in dimensions) {
@@ -316,10 +321,16 @@ export class MyComponent {
           .domain(genre) // 
           .range([height, 20])
       }
-      else {
+      else if (name == "isClassic") {
+
         y[name] = d3.scalePoint()// scale point
-          .domain(d3.extent(data1, function (d) { return d[name]; })) // 
+          .domain(isClassic) // 
           .range([height, 20])
+      }
+      else {
+        y[name] = d3.scalePoint()// scale point
+        .domain(language) // 
+        .range([height, 20])
       }
 
     }
