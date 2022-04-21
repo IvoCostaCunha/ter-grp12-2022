@@ -80,7 +80,7 @@ export class MyComponent {
         }
 
         // We test if genre is defined in the song otherwise we use album genre
-        if (song.hasOwnProperty("genre")) {
+        if ((song.hasOwnProperty("genre")) && (song["genre"].length > 0)) {
           let genreArray = song["genre"];
           let genre = {};
           let i = 0;
@@ -100,7 +100,7 @@ export class MyComponent {
         }
 
         // We test if format is defined otherwise we set it undefined
-        if (song.hasOwnProperty("format")) {
+        if ((song.hasOwnProperty("format")) && (song["format"].length > 0)) {
           let formatArray = song["format"];
           let format = {};
           let i = 0;
@@ -176,14 +176,14 @@ export class MyComponent {
         song["length"] = 0;
       }
 
-      if (songs[index]["format"] && Object.keys(songs[index]["format"]).length) {
+      if (songs[index]["format"]) {
         song["format"] = songs[index]["format"][0];
       }
       else {
         song["format"] = "undefined";
       }
 
-      if (songs[index]["genre"] && Object.keys(songs[index]["genre"]).length) {
+      if (songs[index]["genre"]) {
         song["genre"] = songs[index]["genre"][0];
       }
       else {
