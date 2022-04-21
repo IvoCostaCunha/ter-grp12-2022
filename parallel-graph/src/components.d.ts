@@ -10,7 +10,6 @@ export namespace Components {
         "artist": any;
     }
     interface ParallelGraph {
-        "artist": any;
         "data": string;
         "height": number;
         "width": number;
@@ -39,7 +38,6 @@ declare namespace LocalJSX {
         "artist"?: any;
     }
     interface ParallelGraph {
-        "artist"?: any;
         "data"?: string;
         "height"?: number;
         "width"?: number;
