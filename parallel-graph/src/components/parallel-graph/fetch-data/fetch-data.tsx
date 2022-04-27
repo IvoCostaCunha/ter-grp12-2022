@@ -183,6 +183,10 @@ export class FetchData {
     return songsA;
   }
 
+  private getDataPhaseB(dataObj: object) {
+    
+  }
+
   // Not functionnal for inside objects yet !
   private printAttributeValues(obj: object, attribute: string): string {
     let value = "";

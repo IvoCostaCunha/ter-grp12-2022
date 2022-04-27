@@ -24,15 +24,12 @@ export class MyComponent {
 
   componentDidLoad() {
     this.analiseData();
-    this.convertLengthToInt();
-    this.getSongs(this.dataObj);
+    //this.convertLengthToInt();
+    this.getDataPhaseB(this.dataObj);
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
     this.buildParalleGraph(svg);
-
-
-
   }
 
   private httpGet(url: string): string {
@@ -50,6 +47,14 @@ export class MyComponent {
       console.log(error);
       alert("Data not received due to : " + error);
     }
+  }
+
+  private getStats(data: object): object {
+    let stats = {};
+
+    // % missing data
+    
+    return stats;
   }
 
   private analiseData() {
@@ -200,10 +205,150 @@ export class MyComponent {
       }
       songsA.push(song);
     })
-
-    console.log("songsA ->");
-    console.log(songsA);
     return songsA;
+  }
+
+  private getDataPhaseB(dataObj: object) {
+    let songs = this.getSongs(dataObj);
+    let songsB = [];
+
+    Object.keys(songs).forEach(index => {
+      let song = {};
+      let choice;
+      let nbGenre;
+      let nbFormat;
+
+      if((songs[index]["genre"] != undefined) && (songs[index]["format"] != undefined)) {
+        nbGenre = songs[index]["genre"].length;
+        nbFormat = songs[index]["format"].length;
+
+        if(nbGenre != 0 && nbFormat !=0) {
+          if(nbGenre > nbFormat) choice = "format";
+          else if  (nbFormat > nbGenre) choice = "genre";
+          else if (nbFormat == nbGenre) choice = "equal";
+        }
+        else choice = "check"; 
+      }
+
+      else choice = "undefined detected";
+
+      if (songs[index]["language"] != undefined) {
+        song["language"] = songs[index]["language"];
+      }
+      else {
+        song["language"] = "undefined";
+      }
+
+      if (songs[index]["length"] != undefined) {
+        song["length"] = songs[index]["length"].toString();
+      }
+      else {
+        song["length"] = "undefined";
+      }
+
+      song["isClassic"] = songs[index]["isClassic"];
+      if(songs[index]["isClassic"]==true){
+        song["isClassic"]="true"
+      }
+      else{
+        song["isClassic"]="false"
+      }
+
+      if(choice == "genre") {
+        for(let i = 0; i < nbGenre;  i++) {
+          let songDuplicate = song;
+
+          songDuplicate["format"] = songs[index]["format"][i];
+          songDuplicate["genre"] = songs[index]["genre"][i];
+
+          songsB.push(songDuplicate);
+
+        }
+      }
+      else if (choice  == "format") {
+        for(let i = 0; i < nbFormat;  i++) {
+          let songDuplicate = song;
+
+          songDuplicate["format"] = songs[index]["format"][i];
+          songDuplicate["genre"] = songs[index]["genre"][i];
+
+          songsB.push(songDuplicate);
+        }
+      }
+      else if (choice ==  "equal") {
+        for(let i = 0; i < nbFormat;  i++) {
+          let songDuplicate = song;
+
+          songDuplicate["format"] = songs[index]["format"][i];
+          songDuplicate["genre"] = songs[index]["genre"][i];
+
+          songsB.push(songDuplicate);
+        }
+      }
+      else if (choice = "check") {
+        if(nbGenre != 0) {
+          for(let i = 0; i < nbGenre;  i++) {
+            let songDuplicate = song;
+  
+            songDuplicate["format"] = "undefined";
+            songDuplicate["genre"] = songs[index]["genre"][i];
+  
+            songsB.push(songDuplicate);
+  
+          }
+        }
+        else if (nbFormat != 0) {
+          for(let i = 0; i < nbFormat;  i++) {
+            let songDuplicate = song;
+  
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = "undefined";
+  
+            songsB.push(songDuplicate);
+          }
+        }
+        else {
+          song["format"] = "undefined";
+          song["genre"] = "undefined";
+
+          songsB.push(song);
+        }
+      }
+      else if (choice == "undefined detected") {
+        if((songs[index]["genre"] == undefined) && (songs[index]["format"] != undefined)) {
+          nbFormat = songs[index]["format"].length;
+          for(let i = 0; i < nbFormat;  i++) {
+            let songDuplicate = song;
+  
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = "undefined";
+  
+            songsB.push(songDuplicate);
+          }
+        }
+        else if((songs[index]["format"] == undefined) && (songs[index]["genre"] != undefined)) {
+          nbGenre = songs[index]["genre"].length;
+          for(let i = 0; i < nbGenre;  i++) {
+            let songDuplicate = song;
+  
+            songDuplicate["format"] = "undefined";
+            songDuplicate["genre"] = songs[index]["genre"][i];
+  
+            songsB.push(songDuplicate);
+  
+          }
+        }
+        else {
+          song["format"] = "undefined";
+          song["genre"] = "undefined";
+
+          songsB.push(song);
+        }
+      }
+    })
+    console.log("songsB -> ");
+    console.log(songsB);
+    return songsB;
   }
 
   // Not functionnal for inside objects yet !
@@ -262,8 +407,8 @@ export class MyComponent {
       width = 1000 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseA(this.dataObj);
-    console.log("je suis la");
-    console.log(data1);
+    //console.log("je suis la");
+    //console.log(data1);
     svg.append("g")
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
@@ -291,13 +436,13 @@ export class MyComponent {
       language.push(data1[t].language)
 
     }
-    console.log("je suis la 2")
-    console.log(format)
-    console.log(genre)
-    console.log(title);
-    console.log(isClassic)
+    //console.log("je suis la 2")
+    //console.log(format)
+    //console.log(genre)
+    //console.log(title);
+    //console.log(isClassic)
 
-    console.log(data1[1].length)
+    //console.log(data1[1].length)
 
     for (var i in dimensions) {
       const name = dimensions[i]
@@ -380,6 +525,9 @@ export class MyComponent {
     return (
       <Host>
         <h1>Parallel graph</h1>
+        <p>Artist : {this.artist}</p>
+        <h2>Stats </h2>
+        <p>Missing data : </p>
         <svg class="chart" />
       </Host>
     )
