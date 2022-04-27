@@ -61,7 +61,7 @@ export class MyComponent {
 
     let json = JSON.parse(this.getData());
     this.artist = json["name"];
-    this.dataObj.artist = json["name"];
+
     let albums = json["albums"];
 
     albums.forEach(album => {
@@ -197,7 +197,6 @@ export class MyComponent {
 
       song["isClassic"] = songs[index]["isClassic"];
       if(songs[index]["isClassic"]==true){
-        console.log("je suis dedans")
         song["isClassic"]="true"
       }
       else{
@@ -219,8 +218,8 @@ export class MyComponent {
       let nbFormat;
 
       if((songs[index]["genre"] != undefined) && (songs[index]["format"] != undefined)) {
-        nbGenre = songs[index]["genre"].length;
-        nbFormat = songs[index]["format"].length;
+        nbGenre = Object.keys(songs[index]["genre"]).length;
+        nbFormat = Object.keys(songs[index]["format"]).length;
 
         if(nbGenre != 0 && nbFormat !=0) {
           if(nbGenre > nbFormat) choice = "format";
@@ -231,6 +230,8 @@ export class MyComponent {
       }
 
       else choice = "undefined detected";
+
+      song["title"] = songs[index]["title"];
 
       if (songs[index]["language"] != undefined) {
         song["language"] = songs[index]["language"];
@@ -255,6 +256,7 @@ export class MyComponent {
       }
 
       if(choice == "genre") {
+        console.log("choice == genre");
         for(let i = 0; i < nbGenre;  i++) {
           let songDuplicate = song;
 
@@ -266,6 +268,7 @@ export class MyComponent {
         }
       }
       else if (choice  == "format") {
+        console.log("choice == format");
         for(let i = 0; i < nbFormat;  i++) {
           let songDuplicate = song;
 
@@ -276,6 +279,7 @@ export class MyComponent {
         }
       }
       else if (choice ==  "equal") {
+        console.log("choice == equal");
         for(let i = 0; i < nbFormat;  i++) {
           let songDuplicate = song;
 
@@ -285,13 +289,16 @@ export class MyComponent {
           songsB.push(songDuplicate);
         }
       }
-      else if (choice = "check") {
+      else if (choice == "check") {
+        console.log("choice == check");
         if(nbGenre != 0) {
           for(let i = 0; i < nbGenre;  i++) {
             let songDuplicate = song;
   
             songDuplicate["format"] = "undefined";
             songDuplicate["genre"] = songs[index]["genre"][i];
+
+            console.log(songDuplicate);
   
             songsB.push(songDuplicate);
   
@@ -315,8 +322,10 @@ export class MyComponent {
         }
       }
       else if (choice == "undefined detected") {
+        console.log("choice == undefined detected");
         if((songs[index]["genre"] == undefined) && (songs[index]["format"] != undefined)) {
-          nbFormat = songs[index]["format"].length;
+          console.log("genre == undefined");
+          nbFormat = Object.keys(songs[index]["format"]).length;
           for(let i = 0; i < nbFormat;  i++) {
             let songDuplicate = song;
   
@@ -327,15 +336,18 @@ export class MyComponent {
           }
         }
         else if((songs[index]["format"] == undefined) && (songs[index]["genre"] != undefined)) {
-          nbGenre = songs[index]["genre"].length;
+          console.log("format == undefined")
+          nbGenre = Object.keys(songs[index]["genre"]).length;
           for(let i = 0; i < nbGenre;  i++) {
             let songDuplicate = song;
   
             songDuplicate["format"] = "undefined";
+            console.log(songs[index]["genre"][i]);
             songDuplicate["genre"] = songs[index]["genre"][i];
+
+            console.log(songDuplicate)
   
             songsB.push(songDuplicate);
-  
           }
         }
         else {
