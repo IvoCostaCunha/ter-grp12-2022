@@ -258,7 +258,7 @@ export class MyComponent {
       if(choice == "genre") {
         console.log("choice == genre");
         for(let i = 0; i < nbGenre;  i++) {
-          let songDuplicate = song;
+          let songDuplicate = {...song};
 
           songDuplicate["format"] = songs[index]["format"][i];
           songDuplicate["genre"] = songs[index]["genre"][i];
@@ -270,8 +270,7 @@ export class MyComponent {
       else if (choice  == "format") {
         console.log("choice == format");
         for(let i = 0; i < nbFormat;  i++) {
-          let songDuplicate = song;
-
+          let songDuplicate = {...song};
           songDuplicate["format"] = songs[index]["format"][i];
           songDuplicate["genre"] = songs[index]["genre"][i];
 
@@ -281,7 +280,7 @@ export class MyComponent {
       else if (choice ==  "equal") {
         console.log("choice == equal");
         for(let i = 0; i < nbFormat;  i++) {
-          let songDuplicate = song;
+          let songDuplicate = {...song};
 
           songDuplicate["format"] = songs[index]["format"][i];
           songDuplicate["genre"] = songs[index]["genre"][i];
@@ -293,7 +292,7 @@ export class MyComponent {
         console.log("choice == check");
         if(nbGenre != 0) {
           for(let i = 0; i < nbGenre;  i++) {
-            let songDuplicate = song;
+            let songDuplicate = {...song};
   
             songDuplicate["format"] = "undefined";
             songDuplicate["genre"] = songs[index]["genre"][i];
@@ -306,7 +305,7 @@ export class MyComponent {
         }
         else if (nbFormat != 0) {
           for(let i = 0; i < nbFormat;  i++) {
-            let songDuplicate = song;
+            let songDuplicate = {...song};
   
             songDuplicate["format"] = songs[index]["format"][i];
             songDuplicate["genre"] = "undefined";
@@ -327,7 +326,7 @@ export class MyComponent {
           console.log("genre == undefined");
           nbFormat = Object.keys(songs[index]["format"]).length;
           for(let i = 0; i < nbFormat;  i++) {
-            let songDuplicate = song;
+            let songDuplicate = {...song};
   
             songDuplicate["format"] = songs[index]["format"][i];
             songDuplicate["genre"] = "undefined";
@@ -339,7 +338,7 @@ export class MyComponent {
           console.log("format == undefined")
           nbGenre = Object.keys(songs[index]["genre"]).length;
           for(let i = 0; i < nbGenre;  i++) {
-            let songDuplicate = song;
+            let songDuplicate = {...song}; // copy of object and not of reference !
   
             songDuplicate["format"] = "undefined";
             console.log(songs[index]["genre"][i]);
