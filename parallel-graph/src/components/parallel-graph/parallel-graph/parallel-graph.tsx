@@ -24,8 +24,6 @@ export class MyComponent {
 
   componentDidLoad() {
     this.analiseData();
-    //this.convertLengthToInt();
-    this.getDataPhaseB(this.dataObj);
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
