@@ -8,7 +8,7 @@ import * as d3 from "d3";
 })
 export class MyComponent {
   @Element() element: HTMLElement;
-  @Prop() width: number = 1000;
+  @Prop() width: number = 2000;
   @Prop() height: number = 1000;
   @Prop() data: string = "[]";
 
@@ -398,8 +398,8 @@ export class MyComponent {
   //----- creation du diagramme -------//
   buildParalleGraph(svg) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
-      width = 1000 - margin.left - margin.right,
-      height = 1000 - margin.top - margin.bottom;
+      width = 1900  - margin.left - margin.right,
+      height =1900 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
     //console.log("je suis la");
     //console.log(data1);
@@ -417,12 +417,13 @@ export class MyComponent {
     const y = {}
 
     const title = [];
+    const longueur = [];
     const format = [];
     const genre = [];
     const isClassic= [];
     const language=[]
     for (var t = 0; t < data1.length; t++) {
-
+      longueur.push(data1[t].length)
       title.push(data1[t].title)
       format.push(data1[t].format)
       genre.push(data1[t].genre)
@@ -431,6 +432,7 @@ export class MyComponent {
 
     }
     //console.log("je suis la 2")
+    console.log(longueur)
     //console.log(format)
     //console.log(genre)
     //console.log(title);
@@ -441,8 +443,8 @@ export class MyComponent {
     for (var i in dimensions) {
       const name = dimensions[i]
       if (name == "length") {
-        y[name] = d3.scaleLinear()// scale point
-          .domain(d3.extent(data1, function (d) { return +d[name]; }))
+        y[name] = d3.scalePoint()// scale point
+          .domain(longueur)
           .range([height, 20])
       }
       else if (name == "title") {
@@ -479,7 +481,33 @@ export class MyComponent {
       .range([0, width])
       .padding(1)
       .domain(dimensions);
-
+      
+      function addslashes(ch) {
+        ch = ch.replace(/\s+/g, '')
+        ch = ch.replace(/['"]+/g, '')
+        ch = ch.replace(/[^\w\s!?]/g,'')
+       
+        return ch
+      }
+      const highlight = function (event, d) {
+        console.log(addslashes(d.title))
+  
+        const selected_title = addslashes(d.title)
+        // first every group turns grey
+        d3.selectAll(".line")
+          .style("stroke", "lightgrey")
+          .style("opacity", "1")
+        // Second the hovered title takes its red
+        d3.selectAll("." + selected_title)
+          .style("stroke", "red")
+          .style("opacity", "1")
+      }
+      const doNotHighlight = function (event) {
+        d3.selectAll(".line")
+          .transition().duration(200).delay(1000)
+          .style("stroke", "#69b3a2")
+          .style("opacity", "1")
+      }
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
       return d3.line()(dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));
@@ -489,11 +517,13 @@ export class MyComponent {
       .selectAll("myPath")
       .data(data1)
       .join("path")
+      .attr("class", function (d) { return "line " +  addslashes(d.title)})
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", "#69b3a2")
       .style("opacity", 0.5)
-
+      .on("mouseover", highlight)
+      .on("mouseleave", doNotHighlight)
     // Draw the axis:
 
     svg.selectAll("myAxis")
