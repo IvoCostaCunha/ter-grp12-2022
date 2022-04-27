@@ -418,7 +418,7 @@ export class MyComponent {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1000 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
-    let data1 = this.getDataPhaseA(this.dataObj);
+    let data1 = this.getDataPhaseB(this.dataObj);
     //console.log("je suis la");
     //console.log(data1);
     svg.append("g")
