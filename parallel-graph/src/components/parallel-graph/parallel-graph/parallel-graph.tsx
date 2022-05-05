@@ -1,6 +1,7 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
+import { format } from '../../../utils/utils';
 @Component({
   tag: 'parallel-graph',
   styleUrl: 'parallel-graph.css',
@@ -23,7 +24,18 @@ export class MyComponent {
 
 
   componentDidLoad() {
-    this.analiseData();
+
+    /*
+    // Test data 
+    let tabFormat = ["fa","fb","fc","fd","fe"];
+    let tabGenre = ["ga","gb","gc","gd"];
+    let testData = {"artist": "testArtist", 1: {"format": tabFormat, "genre": tabGenre, "id": "1", "isClassic": false, 
+    "language": "eng", "length": "200", "title": "test"}};
+    
+    this.getDataPhaseB(testData);*/
+
+    this.analyseData();
+
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
@@ -54,7 +66,7 @@ export class MyComponent {
     return stats;
   }
 
-  private analiseData() {
+  private analyseData() {
 
     let json = JSON.parse(this.getData());
     this.artist = json["name"];
@@ -132,8 +144,8 @@ export class MyComponent {
       });
     });
 
-    console.log("dataObj -> ")
-    console.log(this.dataObj);
+    //console.log("dataObj -> ")
+    //console.log(this.dataObj);
   }
 
   private convertLengthToInt(): void {
@@ -145,16 +157,17 @@ export class MyComponent {
     }
   }
 
-  private getSongs(dataObj: object) {
+  private getSongs(obj: object) {
     let songs = {};
-    for (let i = 1; i <= Object.keys(dataObj).length - 1; i++) {
-      songs[i] = this.dataObj[i];
+
+    for (let i = 1; i < Object.keys(obj).length; i++) {
+      songs[i] = obj[i];
     }
     return songs;
   }
 
-  private getDataPhaseA(dataObj: object) {
-    let songs = this.getSongs(dataObj);
+  private getDataPhaseA(obj: object) {
+    let songs = this.getSongs(obj);
     let songsA = [];
 
     Object.keys(songs).forEach(index => {
@@ -202,9 +215,11 @@ export class MyComponent {
     return songsA;
   }
 
-  private getDataPhaseB(dataObj: object) {
-    let songs = this.getSongs(dataObj);
+  private getDataPhaseB(obj: object) {
+    let songs = this.getSongs(obj);
     let songsB = [];
+
+    console.log(songs);
 
     Object.keys(songs).forEach(index => {
       let song = {};
@@ -212,14 +227,13 @@ export class MyComponent {
       let nbGenre;
       let nbFormat;
 
+      // Choose a type of how to treat data
       if((songs[index]["genre"] != undefined) && (songs[index]["format"] != undefined)) {
         nbGenre = Object.keys(songs[index]["genre"]).length;
         nbFormat = Object.keys(songs[index]["format"]).length;
 
         if(nbGenre != 0 && nbFormat !=0) {
-          if(nbGenre > nbFormat) choice = "format";
-          else if  (nbFormat > nbGenre) choice = "genre";
-          else if (nbFormat == nbGenre) choice = "equal";
+          choice = "format&genre";
         }
         else choice = "check"; 
       }
@@ -229,48 +243,30 @@ export class MyComponent {
       song["title"] = songs[index]["title"];
       //song["id"] = songs[index]["id"];
 
-      if (songs[index]["language"] != undefined) {
-        song["language"] = songs[index]["language"];
-      }
-      else {
-        song["language"] = "undefined";
-      }
-
-      if (songs[index]["length"] != undefined) {
-        song["length"] = songs[index]["length"].toString();
-      }
-      else {
-        song["length"] = "undefined";
-      }
+      song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
+      song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
 
       song["isClassic"] = songs[index]["isClassic"];
-      if(songs[index]["isClassic"]==true){
+
+      /*if(songs[index]["isClassic"]){
         song["isClassic"]="true"
       }
       else{
         song["isClassic"]="false"
-      }
+      }*/
 
-      if(choice == "genre") {
-        for(let i = 0; i < nbGenre;  i++) {
-          let songDuplicate = {...song};
-
-          songDuplicate["format"] = songs[index]["format"][i];
-          songDuplicate["genre"] = songs[index]["genre"][i];
-
-          songsB.push(songDuplicate);
-
+      if (choice == "format&genre") {
+        for(let i = 0; i < nbFormat; i++) {
+          for(let j = 0; j < nbGenre; j++) {
+            let songDuplicate = {...song};
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = songs[index]["genre"][j];
+            songsB.push(songDuplicate);
+          }
         }
       }
-      else if (choice  == "format") {
-        for(let i = 0; i < nbFormat;  i++) {
-          let songDuplicate = {...song};
-          songDuplicate["format"] = songs[index]["format"][i];
-          songDuplicate["genre"] = songs[index]["genre"][i];
 
-          songsB.push(songDuplicate);
-        }
-      }
+
       else if (choice ==  "equal") {
         for(let i = 0; i < nbFormat;  i++) {
           let songDuplicate = {...song};
@@ -342,7 +338,7 @@ export class MyComponent {
       }
     })
     console.log("songsB -> ");
-    console.log(songsB);
+    console.table(songsB);
     return songsB;
   }
 
@@ -412,7 +408,7 @@ export class MyComponent {
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d })
 
-    console.log(dimensions)
+    //console.log(dimensions)
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
@@ -433,7 +429,7 @@ export class MyComponent {
 
     }
     //console.log("je suis la 2")
-    console.log(longueur)
+    //console.log(longueur)
     //console.log(format)
     //console.log(genre)
     //console.log(title);
@@ -506,15 +502,15 @@ export class MyComponent {
       .html("The exact value of<br>this cell is: " )
       .style("right","70px")
       .style("top","10px")
-      console.log(Tooltip.nodes())
+      //console.log(Tooltip.nodes())
       }
 
       const highlight = function (event, d) {
        
-        console.log(addslashes(d))
+        //console.log(addslashes(d))
         // verifier si c'est un chiffre si c'est un chiffre return
         const selected_title = addslashes(d)
-       console.log (selected_title)
+       //console.log (selected_title)
         // first every group turns grey
         let selection=svg.selectAll(".line")
           .style("stroke", "#69b3a2")
@@ -526,11 +522,11 @@ export class MyComponent {
           .style("stroke", "#FF0000")
           .style("opacity", "1")
           .style("stroke-width", "3px")
-          console.log(selection.nodes())
+          //console.log(selection.nodes())
           
       }
       const doNotHighlight = function (event) {
-        console.log("j'ai leave")
+        //console.log("j'ai leave")
         svg.selectAll(".line")
           .style("stroke", "#69b3a2")
           .style("opacity", "1")
@@ -565,7 +561,7 @@ export class MyComponent {
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
-      .text(function (d) {console.log(d); return d; })
+      .text(function (d) {return d; })
       .style("fill", "black")
       
 
