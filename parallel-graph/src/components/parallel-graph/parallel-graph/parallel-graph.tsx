@@ -227,6 +227,7 @@ export class MyComponent {
       else choice = "undefined detected";
 
       song["title"] = songs[index]["title"];
+      //song["id"] = songs[index]["id"];
 
       if (songs[index]["language"] != undefined) {
         song["language"] = songs[index]["language"];
@@ -399,7 +400,7 @@ export class MyComponent {
   buildParalleGraph(svg) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900  - margin.left - margin.right,
-      height =1900 - margin.top - margin.bottom;
+      height =1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
     //console.log("je suis la");
     //console.log(data1);
@@ -486,25 +487,29 @@ export class MyComponent {
         ch = ch.replace(/\s+/g, '')
         ch = ch.replace(/['"]+/g, '')
         ch = ch.replace(/[^\w\s!?]/g,'')
-       
-        return ch
+        ch = ch.replace(/\?/g,'')
+        return ch.toLowerCase()
       }
       const highlight = function (event, d) {
-        console.log(addslashes(d.title))
-  
-        const selected_title = addslashes(d.title)
+        console.log(addslashes(d))
+        // verifier si c'est un chiffre si c'est un chiffre return
+        const selected_title = addslashes(d)
+       console.log (selected_title)
         // first every group turns grey
-        d3.selectAll(".line")
-          .style("stroke", "lightgrey")
-          .style("opacity", "1")
+        let selection=svg.selectAll(".line")
+          .style("stroke", "#69b3a2")
+          .style("opacity", "0.1")
         // Second the hovered title takes its red
-        d3.selectAll("." + selected_title)
-          .style("stroke", "red")
+        
+          svg.selectAll("." +selected_title)
+          .style("stroke", "#FF0000")
           .style("opacity", "1")
+          console.log(selection.nodes())
+          
       }
       const doNotHighlight = function (event) {
-        d3.selectAll(".line")
-          .transition().duration(200).delay(1000)
+        console.log("j'ai leave")
+        svg.selectAll(".line")
           .style("stroke", "#69b3a2")
           .style("opacity", "1")
       }
@@ -517,13 +522,12 @@ export class MyComponent {
       .selectAll("myPath")
       .data(data1)
       .join("path")
-      .attr("class", function (d) { return "line " +  addslashes(d.title)})
-      .attr("d", path)
-      .style("fill", "none")
-      .style("stroke", "#69b3a2")
-      .style("opacity", 0.5)
-      .on("mouseover", highlight)
-      .on("mouseleave", doNotHighlight)
+        .attr("class", function (d) { return "line " +  addslashes(d.title)})
+        .attr("d", path)
+        .style("fill", "none")
+        .style("stroke", "#69b3a2")
+        .style("opacity", 0.5)
+      
     // Draw the axis:
 
     svg.selectAll("myAxis")
@@ -533,13 +537,14 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+      .each(function (d) {  d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", highlight).on("mouseleave", doNotHighlight) ; })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
-      .text(function (d) { return d; })
+      .text(function (d) {console.log(d); return d; })
       .style("fill", "black")
+      
 
 
   }
