@@ -8,7 +8,7 @@ import * as d3 from "d3";
 })
 export class MyComponent {
   @Element() element: HTMLElement;
-  @Prop() width: number = 1000;
+  @Prop() width: number = 2000;
   @Prop() height: number = 1000;
   @Prop() data: string = "[]";
 
@@ -24,8 +24,6 @@ export class MyComponent {
 
   componentDidLoad() {
     this.analiseData();
-    //this.convertLengthToInt();
-    this.getDataPhaseB(this.dataObj);
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
@@ -44,7 +42,6 @@ export class MyComponent {
       return data;
     }
     catch (error) {
-      console.log(error);
       alert("Data not received due to : " + error);
     }
   }
@@ -146,8 +143,6 @@ export class MyComponent {
         this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);
       }
     }
-    console.log("dataObjInt -> ")
-    console.log(this.dataObjInt);
   }
 
   private getSongs(dataObj: object) {
@@ -232,6 +227,7 @@ export class MyComponent {
       else choice = "undefined detected";
 
       song["title"] = songs[index]["title"];
+      //song["id"] = songs[index]["id"];
 
       if (songs[index]["language"] != undefined) {
         song["language"] = songs[index]["language"];
@@ -256,7 +252,6 @@ export class MyComponent {
       }
 
       if(choice == "genre") {
-        console.log("choice == genre");
         for(let i = 0; i < nbGenre;  i++) {
           let songDuplicate = {...song};
 
@@ -268,7 +263,6 @@ export class MyComponent {
         }
       }
       else if (choice  == "format") {
-        console.log("choice == format");
         for(let i = 0; i < nbFormat;  i++) {
           let songDuplicate = {...song};
           songDuplicate["format"] = songs[index]["format"][i];
@@ -278,7 +272,6 @@ export class MyComponent {
         }
       }
       else if (choice ==  "equal") {
-        console.log("choice == equal");
         for(let i = 0; i < nbFormat;  i++) {
           let songDuplicate = {...song};
 
@@ -289,15 +282,12 @@ export class MyComponent {
         }
       }
       else if (choice == "check") {
-        console.log("choice == check");
         if(nbGenre != 0) {
           for(let i = 0; i < nbGenre;  i++) {
             let songDuplicate = {...song};
   
             songDuplicate["format"] = "undefined";
             songDuplicate["genre"] = songs[index]["genre"][i];
-
-            console.log(songDuplicate);
   
             songsB.push(songDuplicate);
   
@@ -321,9 +311,7 @@ export class MyComponent {
         }
       }
       else if (choice == "undefined detected") {
-        console.log("choice == undefined detected");
         if((songs[index]["genre"] == undefined) && (songs[index]["format"] != undefined)) {
-          console.log("genre == undefined");
           nbFormat = Object.keys(songs[index]["format"]).length;
           for(let i = 0; i < nbFormat;  i++) {
             let songDuplicate = {...song};
@@ -335,16 +323,12 @@ export class MyComponent {
           }
         }
         else if((songs[index]["format"] == undefined) && (songs[index]["genre"] != undefined)) {
-          console.log("format == undefined")
           nbGenre = Object.keys(songs[index]["genre"]).length;
           for(let i = 0; i < nbGenre;  i++) {
             let songDuplicate = {...song}; // copy of object and not of reference !
   
             songDuplicate["format"] = "undefined";
-            console.log(songs[index]["genre"][i]);
             songDuplicate["genre"] = songs[index]["genre"][i];
-
-            console.log(songDuplicate)
   
             songsB.push(songDuplicate);
           }
@@ -415,8 +399,8 @@ export class MyComponent {
   //----- creation du diagramme -------//
   buildParalleGraph(svg) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
-      width = 1000 - margin.left - margin.right,
-      height = 1000 - margin.top - margin.bottom;
+      width = 1900  - margin.left - margin.right,
+      height =1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
     //console.log("je suis la");
     //console.log(data1);
@@ -434,12 +418,13 @@ export class MyComponent {
     const y = {}
 
     const title = [];
+    const longueur = [];
     const format = [];
     const genre = [];
     const isClassic= [];
     const language=[]
     for (var t = 0; t < data1.length; t++) {
-
+      longueur.push(data1[t].length)
       title.push(data1[t].title)
       format.push(data1[t].format)
       genre.push(data1[t].genre)
@@ -448,6 +433,7 @@ export class MyComponent {
 
     }
     //console.log("je suis la 2")
+    console.log(longueur)
     //console.log(format)
     //console.log(genre)
     //console.log(title);
@@ -458,8 +444,8 @@ export class MyComponent {
     for (var i in dimensions) {
       const name = dimensions[i]
       if (name == "length") {
-        y[name] = d3.scaleLinear()// scale point
-          .domain(d3.extent(data1, function (d) { return +d[name]; }))
+        y[name] = d3.scalePoint()// scale point
+          .domain(longueur)
           .range([height, 20])
       }
       else if (name == "title") {
@@ -496,7 +482,60 @@ export class MyComponent {
       .range([0, width])
       .padding(1)
       .domain(dimensions);
+      
+      function addslashes(ch) {
+        ch = ch.replace(/\s+/g, '')
+        ch = ch.replace(/['"]+/g, '')
+        ch = ch.replace(/[^\w\s!?]/g,'')
+        ch = ch.replace(/\?/g,'')
+        return ch.toLowerCase()
+      }
+      
 
+      var mousemove = function(event,d) {
+        const selected_title = addslashes(d)
+        var Tooltip = svg.selectAll("." +selected_title)
+      .append("div")
+      .style("opacity", 1)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+      .html("The exact value of<br>this cell is: " )
+      .style("right","70px")
+      .style("top","10px")
+      console.log(Tooltip.nodes())
+      }
+
+      const highlight = function (event, d) {
+       
+        console.log(addslashes(d))
+        // verifier si c'est un chiffre si c'est un chiffre return
+        const selected_title = addslashes(d)
+       console.log (selected_title)
+        // first every group turns grey
+        let selection=svg.selectAll(".line")
+          .style("stroke", "#69b3a2")
+          .style("opacity", "0.1")
+          .style("stroke-width", "0.7px")
+        // Second the hovered title takes its red
+        
+          svg.selectAll("." +selected_title)
+          .style("stroke", "#FF0000")
+          .style("opacity", "1")
+          .style("stroke-width", "3px")
+          console.log(selection.nodes())
+          
+      }
+      const doNotHighlight = function (event) {
+        console.log("j'ai leave")
+        svg.selectAll(".line")
+          .style("stroke", "#69b3a2")
+          .style("opacity", "1")
+          .style("stroke-width", "0.7px")
+      }
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
       return d3.line()(dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));
@@ -506,11 +545,12 @@ export class MyComponent {
       .selectAll("myPath")
       .data(data1)
       .join("path")
-      .attr("d", path)
-      .style("fill", "none")
-      .style("stroke", "#69b3a2")
-      .style("opacity", 0.5)
-
+        .attr("class", function (d) { return "line " +  addslashes(d.title)})
+        .attr("d", path)
+        .style("fill", "none")
+        .style("stroke", "#69b3a2")
+        .style("opacity", 0.5)
+      
     // Draw the axis:
 
     svg.selectAll("myAxis")
@@ -520,13 +560,14 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+      .each(function (d) {  d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", highlight).on("mousemove", mousemove).on("mouseleave", doNotHighlight) ; })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
-      .text(function (d) { return d; })
+      .text(function (d) {console.log(d); return d; })
       .style("fill", "black")
+      
 
 
   }
