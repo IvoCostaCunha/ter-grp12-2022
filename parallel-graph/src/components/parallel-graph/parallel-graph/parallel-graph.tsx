@@ -490,7 +490,27 @@ export class MyComponent {
         ch = ch.replace(/\?/g,'')
         return ch.toLowerCase()
       }
+      
+
+      var mousemove = function(event,d) {
+        const selected_title = addslashes(d)
+        var Tooltip = svg.selectAll("." +selected_title)
+      .append("div")
+      .style("opacity", 1)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+      .html("The exact value of<br>this cell is: " )
+      .style("right","70px")
+      .style("top","10px")
+      console.log(Tooltip.nodes())
+      }
+
       const highlight = function (event, d) {
+       
         console.log(addslashes(d))
         // verifier si c'est un chiffre si c'est un chiffre return
         const selected_title = addslashes(d)
@@ -499,11 +519,13 @@ export class MyComponent {
         let selection=svg.selectAll(".line")
           .style("stroke", "#69b3a2")
           .style("opacity", "0.1")
+          .style("stroke-width", "0.7px")
         // Second the hovered title takes its red
         
           svg.selectAll("." +selected_title)
           .style("stroke", "#FF0000")
           .style("opacity", "1")
+          .style("stroke-width", "3px")
           console.log(selection.nodes())
           
       }
@@ -512,6 +534,7 @@ export class MyComponent {
         svg.selectAll(".line")
           .style("stroke", "#69b3a2")
           .style("opacity", "1")
+          .style("stroke-width", "0.7px")
       }
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
@@ -537,7 +560,7 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) {  d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", highlight).on("mouseleave", doNotHighlight) ; })
+      .each(function (d) {  d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", highlight).on("mousemove", mousemove).on("mouseleave", doNotHighlight) ; })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")
