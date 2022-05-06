@@ -407,13 +407,13 @@ export class MyComponent {
     const y = {}
     
     const title = [];
-    const longueur = [];
+    let longueur = [];
     const format = [];
     const genre = [];
     const isClassic = [];
     const language = []
     for (var t = 0; t < data1.length; t++) {
-      longueur.push(data1[t].length)
+      longueur.push(data1[t]["length"])
       title.push(data1[t].title)
       format.push(data1[t].format)
       genre.push(data1[t].genre)
@@ -421,7 +421,14 @@ export class MyComponent {
       language.push(data1[t].language)
 
     }
-    longueur.sort()
+
+    let bonneLongueur = longueur.filter(d => d != "undefined")
+    bonneLongueur.sort((a,b)=> +b-(+a))
+
+    bonneLongueur.splice(0, 0, "undefined")
+    longueur = bonneLongueur
+
+    console.log("longueur",longueur)
     //console.log("je suis la 2")
     //console.log(longueur)
     //console.log(format)
@@ -491,17 +498,16 @@ export class MyComponent {
 
 
     var mousemove = function (event, d) {
-      Tooltip
-      .html("The tittle is: " + d)
-      .style("left", 10 + "px")
-      .style("top",  "10px")
+      
+     
+      
       //console.log(Tooltip.nodes())
     }
 
     const mouseover = function (event, d) {
       //console.log(addslashes(d))
       // verifier si c'est un chiffre si c'est un chiffre return
-      
+      // console.log("event :" , event);
       const selected_title = addslashes(d)
       //console.log (selected_title)
       // first every group turns grey
@@ -516,11 +522,13 @@ export class MyComponent {
         .style("stroke-width", "3px")
       //console.log(selection.nodes())
       Tooltip
-      .style("opacity", 1)
       // titre en gras
-      d3.select(this)
       .style("stroke", "black")
       .style("opacity", 1)
+      .html("The tittle is: " + d)
+      .style("left", event.pageX + "px")
+      .style("top",  event.pageY+ "px")
+      .style("position", "absolute")
 
     }
     const mouseleave = function (event) {
@@ -555,6 +563,7 @@ export class MyComponent {
     svg.selectAll("myAxis")
       // For each dimension of the dataset I add a 'g' element:
       .data(dimensions).enter()
+      //TODO: trier liste dimensions selon l'ordre visuel désiré
       .append("g")
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
