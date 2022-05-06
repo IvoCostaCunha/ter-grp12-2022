@@ -565,6 +565,7 @@ export class MyComponent {
       .data(dimensions).enter()
       //TODO: trier liste dimensions selon l'ordre visuel désiré
       .append("g")
+      //TODO:  voir comment marche join et remplacer append par join où necessaire (réaffichage dynamique de la page)
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
