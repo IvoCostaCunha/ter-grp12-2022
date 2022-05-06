@@ -36,11 +36,11 @@ export class MyComponent {
     this.getDataPhaseB(testData);*/
 
     this.analyseData();
-
+    let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildParalleGraph(svg);
+    this.buildParalleGraph(svg,divT);
   }
 
   private httpGet(url: string): string {
@@ -386,7 +386,7 @@ export class MyComponent {
   }
 
   //----- creation du diagramme -------//
-  buildParalleGraph(svg) {
+  buildParalleGraph(svg,divT) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
@@ -405,7 +405,7 @@ export class MyComponent {
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
-
+    
     const title = [];
     const longueur = [];
     const format = [];
@@ -480,51 +480,60 @@ export class MyComponent {
       ch = ch.replace(/\?/g, '')
       return ch.toLowerCase()
     }
+//-------------------Tooltip --------------------------//
+    var Tooltip = divT.append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
 
 
     var mousemove = function (event, d) {
-      const selected_title = addslashes(d)
-      var Tooltip = svg.selectAll("." + selected_title)
-        .append("div")
-        .style("opacity", 1)
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px")
-        .html("The exact value of<br>this cell is: ")
-        .style("right", "70px")
-        .style("top", "10px")
+      Tooltip
+      .html("The tittle is: " + d)
+      .style("left", 10 + "px")
+      .style("top",  "10px")
       //console.log(Tooltip.nodes())
     }
 
-    const highlight = function (event, d) {
-
+    const mouseover = function (event, d) {
       //console.log(addslashes(d))
       // verifier si c'est un chiffre si c'est un chiffre return
+      
       const selected_title = addslashes(d)
       //console.log (selected_title)
       // first every group turns grey
-      let selection = svg.selectAll(".line")
+      svg.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "0.1")
         .style("stroke-width", "0.7px")
       // Second the hovered title takes its red
-
       svg.selectAll("." + selected_title)
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
       //console.log(selection.nodes())
+      Tooltip
+      .style("opacity", 1)
+      // titre en gras
+      d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
 
     }
-    const doNotHighlight = function (event) {
+    const mouseleave = function (event) {
       //console.log("j'ai leave")
       svg.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "1")
         .style("stroke-width", "0.7px")
+        Tooltip
+        .style("opacity", 0)
+        d3.select(this)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
     }
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
@@ -550,7 +559,7 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", highlight).on("mousemove", mousemove).on("mouseleave", doNotHighlight); })
+      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave); })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")
@@ -566,11 +575,14 @@ export class MyComponent {
   render() {
     return (
       <Host>
+         <div class="tool">
         <h1>Parallel graph</h1>
         <p>Artist : {this.artist}</p>
         <h2>Stats </h2>
         <p>Missing data : </p>
+       
         <svg class="chart" />
+        </div>
       </Host>
     )
   }
