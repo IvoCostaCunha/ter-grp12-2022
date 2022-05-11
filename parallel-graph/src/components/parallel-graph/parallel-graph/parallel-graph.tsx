@@ -81,7 +81,6 @@ export class MyComponent {
 
   private handleChange(event) {
     this.newArtist = event.target.value;
-    let color = this.getData(this.newArtist) == null ? "red" : "green"; 
     // TODO: Should load there a list of artist which names are like the one typed
 
   }
