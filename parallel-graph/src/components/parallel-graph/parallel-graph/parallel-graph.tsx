@@ -82,7 +82,7 @@ export class MyComponent {
   private handleChange(event) {
     this.newArtist = event.target.value;
     let color = this.getData(this.newArtist) == null ? "red" : "green"; 
-    this.element.shadowRoot.querySelectorAll(".input-search")[0].setAttribute('style', 'color: '+ color);
+    // TODO: Should load there a list of artist which names are like the one typed
 
   }
 
@@ -505,10 +505,6 @@ export class MyComponent {
     .style("border", "solid")
     .style("border-width", "2px")
     .style("border-radius", "5px")
-
-
-    var mousemove = function (event, d) {
-    }
 
     const mouseover = function (event, d) {
       // verifier si c'est un chiffre si c'est un chiffre return
