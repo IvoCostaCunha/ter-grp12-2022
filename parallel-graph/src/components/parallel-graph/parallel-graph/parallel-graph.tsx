@@ -24,8 +24,6 @@ export class MyComponent {
 
 
   componentDidLoad() {
-
-
     /*
     // Test data 
     let tabFormat = ["fa","fb","fc","fd","fe"];
@@ -34,7 +32,6 @@ export class MyComponent {
     "language": "eng", "length": "200", "title": "test"}};
     
     this.getDataPhaseB(testData);*/
-
     this.analyseData();
     let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
@@ -42,7 +39,7 @@ export class MyComponent {
       .attr("height", this.height);
     this.buildParalleGraph(svg,divT);
   }
-
+//------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false);
@@ -385,7 +382,7 @@ export class MyComponent {
     return value
   }
 
-  //----- creation du diagramme -------//
+  //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
   buildParalleGraph(svg,divT) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
@@ -481,6 +478,7 @@ export class MyComponent {
       .domain(dimensions);
 
     function addslashes(ch) {
+      ch= "a"+ch
       ch = ch.replace(/\s+/g, '')
       ch = ch.replace(/['"]+/g, '')
       ch = ch.replace(/[^\w\s!?]/g, '')
@@ -521,12 +519,13 @@ export class MyComponent {
         .style("opacity", "1")
         .style("stroke-width", "3px")
       //console.log(selection.nodes())
+     
       Tooltip
       // titre en gras
       .style("stroke", "black")
       .style("opacity", 1)
       .html("The tittle is: " + d)
-      .style("left", event.pageX + "px")
+      .style("left", (event.pageX-240 )+ "px")
       .style("top",  event.pageY+ "px")
       .style("position", "absolute")
 
@@ -552,7 +551,7 @@ export class MyComponent {
       .selectAll("myPath")
       .data(data1)
       .join("path")
-      .attr("class", function (d) { return "line " + addslashes(d.title) })
+      .attr("class", function (d) { return "line " + addslashes(d.title) + " " +  addslashes(d.language) + " "+ addslashes(d.format)+" "+ addslashes(d.genre) +" "+ addslashes(d.length)+" "+ addslashes(d.isClassic)})
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", "#69b3a2")
@@ -569,7 +568,7 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave); })
+      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mouseleave", mouseleave); })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")

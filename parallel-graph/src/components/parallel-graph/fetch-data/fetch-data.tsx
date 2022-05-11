@@ -13,34 +13,41 @@ export class FetchData {
   @State() dataObjInt;
 
   componentDidLoad() {
-    this.analiseData();
+    this.analyseData();
     this.convertLengthToInt();
     this.getSongs(this.dataObj);
     this.getDataPhaseA(this.dataObj);
   }
 
-  private httpGet(url: string): string {
+  public httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
-    xmlHttpReq.open("GET", url, false); 
+    xmlHttpReq.open("GET", url, false);
     xmlHttpReq.send(null);
     return xmlHttpReq.responseText;
   }
-  private getData(): string {
-    try{
-      let data = this.httpGet("https://wasabi.i3s.unice.fr/api/v1/artist_all/name/"+this.artist)
+  public getData(): string {
+    try {
+      let data = this.httpGet("https://wasabi.i3s.unice.fr/api/v1/artist_all/name/" + this.artist)
       return data;
     }
-    catch(error) {
-      console.log(error);
+    catch (error) {
       alert("Data not received due to : " + error);
-    } 
+    }
   }
 
-  private analiseData() {
+  public getStats(data: object): object {
+    let stats = {};
+
+    // % missing data
+
+    return stats;
+  }
+
+  public analyseData() {
 
     let json = JSON.parse(this.getData());
     this.artist = json["name"];
-    this.dataObj.artist = json["name"];
+
     let albums = json["albums"];
 
     albums.forEach(album => {
@@ -49,14 +56,14 @@ export class FetchData {
       let globalGenre = album["genre"];
 
       songs.forEach(song => {
-        let songObj = {id:"", title:"", length:"", language:"", isClassic:""};
+        let songObj = { id: "", title: "", length: "", language: "", isClassic: "" };
 
         songObj.id = song["_id"];
         songObj.title = song["title"];
         songObj.isClassic = song["isClassic"];
 
         // We test if lenght is defined 
-        if(song["length"] != "") {
+        if (song["length"] != "") {
           songObj.length = song["length"];
         }
         else {
@@ -64,7 +71,7 @@ export class FetchData {
         }
 
         // We test if genre is defined in the song otherwise we use album genre
-        if(song.hasOwnProperty("genre")) {
+        if ((song.hasOwnProperty("genre")) && (song["genre"].length > 0)) {
           let genreArray = song["genre"];
           let genre = {};
           let i = 0;
@@ -74,8 +81,8 @@ export class FetchData {
           });
           songObj["genre"] = genre;
         }
-        else{
-          if(globalGenre != "") {
+        else {
+          if (globalGenre != "") {
             songObj["genre"] = globalGenre;
           }
           else {
@@ -84,7 +91,7 @@ export class FetchData {
         }
 
         // We test if format is defined otherwise we set it undefined
-        if(song.hasOwnProperty("format")) {
+        if ((song.hasOwnProperty("format")) && (song["format"].length > 0)) {
           let formatArray = song["format"];
           let format = {};
           let i = 0;
@@ -92,15 +99,15 @@ export class FetchData {
             format[i] = f;
             i++;
           });
-          songObj["format"]  = format;
+          songObj["format"] = format;
         }
         else {
           songObj["format"] = undefined;
         }
 
         // We verify if "language" isn't undefined, if it is we take "language_detect" instead
-        if(song["language"] == "") {
-          if(song["language_detect"] != undefined) {
+        if (song["language"] == "") {
+          if (song["language_detect"] != undefined) {
             songObj.language = song["language_detect"];
           }
         }
@@ -114,81 +121,198 @@ export class FetchData {
       });
     });
 
-    console.log("dataObj -> ")
-    console.log(this.dataObj);
+    //console.log("dataObj -> ")
+    //console.log(this.dataObj);
   }
 
-  private convertLengthToInt(): void {
+  public convertLengthToInt(): void {
     this.dataObjInt = this.dataObj;
-    for(let i=1; i<=Object.keys(this.dataObjInt).length-1; i++) {
-      if(this.dataObjInt[i].length != undefined) {
-        this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);    
+    for (let i = 1; i <= Object.keys(this.dataObjInt).length - 1; i++) {
+      if (this.dataObjInt[i].length != undefined) {
+        this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);
       }
     }
-    console.log("dataObjInt -> ")
-    console.log(this.dataObjInt);
   }
 
-  private getSongs(dataObj: object) {
+  public getSongs(obj: object) {
     let songs = {};
-    for(let i=1; i<=Object.keys(dataObj).length-1; i++) {
-      songs[i] = this.dataObj[i];
+
+    for (let i = 1; i < Object.keys(obj).length; i++) {
+      songs[i] = obj[i];
     }
     return songs;
   }
 
-  private getDataPhaseA(dataObj: object) {
-    let songs = this.getSongs(dataObj);
-    let songsA = {};
+  public getDataPhaseA(obj: object) {
+    let songs = this.getSongs(obj);
+    let songsA = [];
 
     Object.keys(songs).forEach(index => {
       let song = {};
 
       song["title"] = songs[index]["title"];
 
-      if(songs[index]["language"] != undefined) {
+      if (songs[index]["language"] != undefined) {
         song["language"] = songs[index]["language"];
       }
       else {
-        song["language"] = undefined;
+        song["language"] = "undefined";
       }
 
-      if(songs[index]["length"] != undefined) {
+      if (songs[index]["length"] != undefined) {
         song["length"] = songs[index]["length"];
       }
       else {
-        song["length"] = undefined;
+        song["length"] = 0;
       }
 
-      if(songs[index]["format"] != undefined) {
+      if (songs[index]["format"]) {
         song["format"] = songs[index]["format"][0];
       }
       else {
-        song["format"] = undefined;
+        song["format"] = "undefined";
       }
 
-      if(songs[index]["genre"] != undefined) {
+      if (songs[index]["genre"]) {
         song["genre"] = songs[index]["genre"][0];
       }
       else {
-        song["genre"] = undefined;
+        song["genre"] = "undefined";
       }
 
       song["isClassic"] = songs[index]["isClassic"];
-      songsA[index] = song;
+      if (songs[index]["isClassic"] == true) {
+        song["isClassic"] = "true"
+      }
+      else {
+        song["isClassic"] = "false"
+      }
+      songsA.push(song);
     })
-
-    console.log("songsA ->");
-    console.log(songsA);
     return songsA;
   }
 
-  private getDataPhaseB(dataObj: object) {
-    
+  public getDataPhaseB(obj: object) {
+    let songs = this.getSongs(obj);
+    let songsB = [];
+
+    console.log(songs);
+
+    Object.keys(songs).forEach(index => {
+      let song = {};
+      let choice;
+      let nbGenre;
+      let nbFormat;
+
+      // Choose a type of how to treat data
+      if ((songs[index]["genre"] != undefined) && (songs[index]["format"] != undefined)) {
+        nbGenre = Object.keys(songs[index]["genre"]).length;
+        nbFormat = Object.keys(songs[index]["format"]).length;
+
+        if (nbGenre != 0 && nbFormat != 0) {
+          choice = "format&genre";
+        }
+        else choice = "check";
+      }
+
+      else choice = "undefined detected";
+
+      song["title"] = songs[index]["title"];
+      //song["id"] = songs[index]["id"];
+
+      song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
+      song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
+
+      song["isClassic"] = songs[index]["isClassic"];
+
+      if (choice == "format&genre") {
+        for (let i = 0; i < nbFormat; i++) {
+          for (let j = 0; j < nbGenre; j++) {
+            let songDuplicate = { ...song };
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = songs[index]["genre"][j];
+            songsB.push(songDuplicate);
+          }
+        }
+      }
+
+      else if (choice == "equal") {
+        for (let i = 0; i < nbFormat; i++) {
+          let songDuplicate = { ...song };
+
+          songDuplicate["format"] = songs[index]["format"][i];
+          songDuplicate["genre"] = songs[index]["genre"][i];
+
+          songsB.push(songDuplicate);
+        }
+      }
+      else if (choice == "check") {
+        if (nbGenre != 0) {
+          for (let i = 0; i < nbGenre; i++) {
+            let songDuplicate = { ...song };
+
+            songDuplicate["format"] = "undefined";
+            songDuplicate["genre"] = songs[index]["genre"][i];
+
+            songsB.push(songDuplicate);
+
+          }
+        }
+        else if (nbFormat != 0) {
+          for (let i = 0; i < nbFormat; i++) {
+            let songDuplicate = { ...song };
+
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = "undefined";
+
+            songsB.push(songDuplicate);
+          }
+        }
+        else {
+          song["format"] = "undefined";
+          song["genre"] = "undefined";
+
+          songsB.push(song);
+        }
+      }
+      else if (choice == "undefined detected") {
+        if ((songs[index]["genre"] == undefined) && (songs[index]["format"] != undefined)) {
+          nbFormat = Object.keys(songs[index]["format"]).length;
+          for (let i = 0; i < nbFormat; i++) {
+            let songDuplicate = { ...song };
+
+            songDuplicate["format"] = songs[index]["format"][i];
+            songDuplicate["genre"] = "undefined";
+
+            songsB.push(songDuplicate);
+          }
+        }
+        else if ((songs[index]["format"] == undefined) && (songs[index]["genre"] != undefined)) {
+          nbGenre = Object.keys(songs[index]["genre"]).length;
+          for (let i = 0; i < nbGenre; i++) {
+            let songDuplicate = { ...song }; // copy of object and not of reference !
+
+            songDuplicate["format"] = "undefined";
+            songDuplicate["genre"] = songs[index]["genre"][i];
+
+            songsB.push(songDuplicate);
+          }
+        }
+        else {
+          song["format"] = "undefined";
+          song["genre"] = "undefined";
+
+          songsB.push(song);
+        }
+      }
+    })
+    console.log("songsB -> ");
+    console.table(songsB);
+    return songsB;
   }
 
   // Not functionnal for inside objects yet !
-  private printAttributeValues(obj: object, attribute: string): string {
+  public printAttributeValues(obj: object, attribute: string): string {
     let value = "";
     Object.keys(obj).forEach(index => {
       // index is 1 2 3 ect here so the index ! It's not an object !
@@ -196,8 +320,8 @@ export class FetchData {
       //console.log(obj[index][attribute])
 
       // A way to deal with reading undefined as an object ?
-      if(obj[index][attribute] != undefined) {
-        if(Object.keys(obj[index][attribute]).length <= 1) {
+      if (obj[index][attribute] != undefined) {
+        if (Object.keys(obj[index][attribute]).length <= 1) {
           Object.keys(obj[index][attribute]).forEach(e => {
             value = value + e + " - ";
           });
@@ -248,7 +372,7 @@ export class FetchData {
         <h1>Languages</h1> 
         {this.printAttributeValues(this.getSongs(this.dataObj), "language")}
         <h1>Genres</h1> 
-        
+       
         <br/><br/><br/>
         <h1>Raw JSON</h1> 
       </Host>
