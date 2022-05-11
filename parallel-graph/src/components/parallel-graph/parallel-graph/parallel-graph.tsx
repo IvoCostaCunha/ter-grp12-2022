@@ -128,8 +128,11 @@ export class MyComponent {
 
         // We verify if "language" isn't undefined, if it is we take "language_detect" instead
         if (song["language"] == "") {
-          if (song["language_detect"] != undefined) {
+          if (song["language_detect"] != "") {
             songObj.language = song["language_detect"];
+          }
+          else{
+            songObj.language="empty";
           }
         }
         else {
