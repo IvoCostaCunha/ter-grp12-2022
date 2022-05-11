@@ -13,7 +13,8 @@ export class MyComponent {
   @Prop() height: number = 1000;
   @Prop() data: string = "[]";
 
-  @Prop() artist;
+  @State() newArtist: string;
+  @State() currentArtist: string;
 
   // Constain valuable information to use in the parallel graph
   @State() dataObj = { artist: "" };
@@ -21,9 +22,7 @@ export class MyComponent {
   @State() dataa;
   public chartData: any;
 
-
-
-  componentDidLoad() {
+  componentWillLoad() {
     /*
     // Test data 
     let tabFormat = ["fa","fb","fc","fd","fe"];
@@ -32,12 +31,14 @@ export class MyComponent {
     "language": "eng", "length": "200", "title": "test"}};
     
     this.getDataPhaseB(testData);*/
-    this.analyseData();
-    let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
+    this.currentArtist = "Queen";
+    this.loadGraph();
+    //this.analyseData();
+    /*let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildParalleGraph(svg,divT);
+    this.buildParalleGraph(svg,divT);*/
   }
 //------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
@@ -46,14 +47,39 @@ export class MyComponent {
     xmlHttpReq.send(null);
     return xmlHttpReq.responseText;
   }
-  private getData(): string {
+  private getData(artist: string): string {
     try {
-      let data = this.httpGet("https://wasabi.i3s.unice.fr/api/v1/artist_all/name/" + this.artist)
+      let data = this.httpGet("https://wasabi.i3s.unice.fr/api/v1/artist_all/name/" + artist)
       return data;
     }
-    catch (error) {
-      alert("Data not received due to : " + error);
+    catch (e) {
+      alert("Data not received due to : " + e);
     }
+  }
+
+  private loadGraph() {
+    this.render();
+    let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
+    let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
+      .attr("width", this.width)
+      .attr("height", this.height);
+    this.buildParalleGraph(svg,divT);
+  }
+
+  private changeArtistName(artistName) {
+    this.analyseData(artistName);
+    this.loadGraph();
+  }
+
+  private handleSubmit(event: Event) {
+    event.preventDefault();
+    //console.log(event)
+    this.currentArtist = this.newArtist;
+    this.changeArtistName(this.currentArtist);
+  }
+
+  private handleChange(event) {
+    this.newArtist = event.target.value;
   }
 
   private getStats(data: object): object {
@@ -64,10 +90,11 @@ export class MyComponent {
     return stats;
   }
 
-  private analyseData() {
+  private analyseData(artist: string) {
 
-    let json = JSON.parse(this.getData());
-    this.artist = json["name"];
+    let json = JSON.parse(this.getData(artist));
+
+    console.table(json)
 
     let albums = json["albums"];
 
@@ -147,15 +174,6 @@ export class MyComponent {
 
     //console.log("dataObj -> ")
     //console.log(this.dataObj);
-  }
-
-  private convertLengthToInt(): void {
-    this.dataObjInt = this.dataObj;
-    for (let i = 1; i <= Object.keys(this.dataObjInt).length - 1; i++) {
-      if (this.dataObjInt[i].length != undefined) {
-        this.dataObjInt[i].length = parseInt(this.dataObjInt[i].length);
-      }
-    }
   }
 
   private getSongs(obj: object) {
@@ -583,17 +601,29 @@ export class MyComponent {
 
   }
 
+  // used https://stenciljs.com/docs/forms for form
 
   render() {
     return (
       <Host>
-         <div class="tool">
-        <h1>Parallel graph</h1>
-        <p>Artist : {this.artist}</p>
-        <h2>Stats </h2>
-        <p>Missing data : </p>
-       
-        <svg class="chart" />
+        <div id="search-zone">
+          <h1>Parallel graph</h1>
+
+          <form onSubmit={(e) => this.handleSubmit(e)}>
+            <label> 
+              Artist name: 
+              <input type="text" value={this.newArtist} onInput={(event) => this.handleChange(event)} />
+            </label>
+            <input type="submit" value="Search" />
+          </form>
+
+          <p>Current artist : {this.currentArtist}</p>
+          <h2>Stats </h2>
+          <p>Missing data : </p>
+        </div>
+
+        <div id="dynamic-graph" class="tool">
+          <svg class="chart" />
         </div>
       </Host>
     )
