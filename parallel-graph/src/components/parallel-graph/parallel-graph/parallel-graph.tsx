@@ -1,7 +1,6 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
-import { format } from '../../../utils/utils';
 @Component({
   tag: 'parallel-graph',
   styleUrl: 'parallel-graph.css',
