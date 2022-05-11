@@ -16,13 +16,14 @@ export class MyComponent {
   @State() newArtist: string;
   @State() currentArtist: string;
 
+
   // Constain valuable information to use in the parallel graph
   @State() dataObj = { artist: "" };
   @State() dataObjInt;
   @State() dataa;
   public chartData: any;
 
-  componentWillLoad() {
+  componentDidLoad() {
     /*
     // Test data 
     let tabFormat = ["fa","fb","fc","fd","fe"];
@@ -31,21 +32,21 @@ export class MyComponent {
     "language": "eng", "length": "200", "title": "test"}};
     
     this.getDataPhaseB(testData);*/
-    this.currentArtist = "Queen";
+    this.currentArtist = "Shakira";
+    this.changeArtistName("Queen");
     this.loadGraph();
-    //this.analyseData();
-    /*let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
-    let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
-      .attr("width", this.width)
-      .attr("height", this.height);
-    this.buildParalleGraph(svg,divT);*/
   }
 //------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false);
     xmlHttpReq.send(null);
-    return xmlHttpReq.responseText;
+    if(xmlHttpReq.status == 200) {
+      return xmlHttpReq.responseText;
+    }
+    else {
+      return xmlHttpReq.status.toString();
+    }
   }
   private getData(artist: string): string {
     try {
@@ -58,7 +59,6 @@ export class MyComponent {
   }
 
   private loadGraph() {
-    this.render();
     let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
@@ -67,34 +67,48 @@ export class MyComponent {
   }
 
   private changeArtistName(artistName) {
+    this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = "loading...";
     this.analyseData(artistName);
+    this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = '<svg class="chart" />';
     this.loadGraph();
   }
 
   private handleSubmit(event: Event) {
     event.preventDefault();
-    //console.log(event)
     this.currentArtist = this.newArtist;
     this.changeArtistName(this.currentArtist);
   }
 
   private handleChange(event) {
     this.newArtist = event.target.value;
-  }
+    let color = this.getData(this.newArtist) == null ? "red" : "green"; 
+    this.element.shadowRoot.querySelectorAll(".input-search")[0].setAttribute('style', 'color: '+ color);
 
-  private getStats(data: object): object {
-    let stats = {};
-
-    // % missing data
-
-    return stats;
   }
 
   private analyseData(artist: string) {
 
-    let json = JSON.parse(this.getData(artist));
+    let json;
 
-    console.table(json)
+    if(this.getData(artist) == "404") {
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: orange");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Artist name not found on Wasabi.";
+      console.log("Artist name not found on Wasabi.");
+      return null;
+    }
+    else if(this.getData(artist) == "429") {
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: red");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Too many requests on Wasabi.";
+      console.log("Too many requests on Wasabi.")
+      return null;
+    }
+    else {
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: green");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Request OK.";
+      console.log("Request OK.");
+
+      json = JSON.parse(this.getData(artist));
+    }
 
     let albums = json["albums"];
 
@@ -171,9 +185,6 @@ export class MyComponent {
         index++;
       });
     });
-
-    //console.log("dataObj -> ")
-    //console.log(this.dataObj);
   }
 
   private getSongs(obj: object) {
@@ -237,8 +248,6 @@ export class MyComponent {
   private getDataPhaseB(obj: object) {
     let songs = this.getSongs(obj);
     let songsB = [];
-
-    console.log(songs);
 
     Object.keys(songs).forEach(index => {
       let song = {};
@@ -348,8 +357,6 @@ export class MyComponent {
         }
       }
     })
-    console.log("songsB -> ");
-    console.table(songsB);
     return songsB;
   }
 
@@ -358,8 +365,6 @@ export class MyComponent {
     let value = "";
     Object.keys(obj).forEach(index => {
       // index is 1 2 3 ect here so the index ! It's not an object !
-
-      //console.log(obj[index][attribute])
 
       // A way to deal with reading undefined as an object ?
       if (obj[index][attribute] != undefined) {
@@ -409,8 +414,6 @@ export class MyComponent {
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
-    //console.log("je suis la");
-    //console.log(data1);
     svg.append("g")
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
@@ -418,8 +421,6 @@ export class MyComponent {
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d })
-
-    //console.log(dimensions)
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
@@ -445,16 +446,6 @@ export class MyComponent {
 
     bonneLongueur.splice(0, 0, "undefined")
     longueur = bonneLongueur
-
-    console.log("longueur",longueur)
-    //console.log("je suis la 2")
-    //console.log(longueur)
-    //console.log(format)
-    //console.log(genre)
-    //console.log(title);
-    //console.log(isClassic)
-
-    //console.log(data1[1].length)
 
     for (var i in dimensions) {
       const name = dimensions[i]
@@ -517,18 +508,11 @@ export class MyComponent {
 
 
     var mousemove = function (event, d) {
-      
-     
-      
-      //console.log(Tooltip.nodes())
     }
 
     const mouseover = function (event, d) {
-      //console.log(addslashes(d))
       // verifier si c'est un chiffre si c'est un chiffre return
-      // console.log("event :" , event);
       const selected_title = addslashes(d)
-      //console.log (selected_title)
       // first every group turns grey
       svg.selectAll(".line")
         .style("stroke", "#69b3a2")
@@ -539,7 +523,6 @@ export class MyComponent {
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
-      //console.log(selection.nodes())
      
       Tooltip
       // titre en gras
@@ -552,7 +535,6 @@ export class MyComponent {
 
     }
     const mouseleave = function (event) {
-      //console.log("j'ai leave")
       svg.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "1")
@@ -606,23 +588,22 @@ export class MyComponent {
   render() {
     return (
       <Host>
-        <div id="search-zone">
+        <div class="search-zone">
           <h1>Parallel graph</h1>
 
           <form onSubmit={(e) => this.handleSubmit(e)}>
             <label> 
-              Artist name: 
-              <input type="text" value={this.newArtist} onInput={(event) => this.handleChange(event)} />
+              Search artist name:  <input class="input-search" type="text" value={this.newArtist} onInput={(event) => this.handleChange(event)} />
             </label>
             <input type="submit" value="Search" />
           </form>
-
-          <p>Current artist : {this.currentArtist}</p>
-          <h2>Stats </h2>
+          <div class="log"> No problems </div>
+          <div class="current-artist" >Current artist : {this.currentArtist}</div>
+          <h2>Stats (TODO) </h2>
           <p>Missing data : </p>
         </div>
 
-        <div id="dynamic-graph" class="tool">
+        <div class="tool">
           <svg class="chart" />
         </div>
       </Host>
