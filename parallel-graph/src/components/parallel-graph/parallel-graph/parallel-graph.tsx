@@ -31,7 +31,7 @@ export class MyComponent {
     "language": "eng", "length": "200", "title": "test"}};
     
     this.getDataPhaseB(testData);*/
-    this.currentArtist = "Shakira";
+    this.currentArtist = "Queen";
     this.changeArtistName("Queen");
     this.loadGraph();
   }
@@ -406,7 +406,16 @@ export class MyComponent {
     return value
   }
 
+
+
+
+
+
   //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
+
+
+
+
   buildParalleGraph(svg,divT) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
@@ -442,7 +451,7 @@ export class MyComponent {
     const language = []
     for (var t = 0; t < data1.length; t++) {
      
-      longueur.push(data1[t]["length"])
+      longueur.push(data1[t].length)
       title.push(data1[t].title)
       format.push(data1[t].format)
       genre.push(data1[t].genre)
@@ -543,14 +552,49 @@ export class MyComponent {
       return ch.toLowerCase()
     }
 //-------------------Tooltip --------------------------//
+
+
     var Tooltip = divT.append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
-    .style("background-color", "white")
+    .style("background-color", "#d2ebbe")
     .style("border", "solid")
     .style("border-width", "2px")
     .style("border-radius", "5px")
-
+    var mousemove = function(event,d) {
+      let tmptitle = [];
+      let tmplong = [];
+         for (var t = 0; t < data1.length; t++) {
+         if (d==data1[t].title){
+           tmptitle.push(data1[t].title)
+           if (!tmplong.includes(data1[t].length)){
+           tmplong.push(data1[t].length)
+         }
+         }
+ 
+         }
+         if(tmptitle.includes(d)){
+         if(tmplong.length>1){
+       Tooltip
+       // titre en gras
+       .style("stroke", "black")
+       .html("The tittle is: " + d+"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0]+"<br>"+"second id length : "+tmplong[1])
+       .style("left", (event.pageX-240 )+ "px")
+       .style("top",  (event.pageY+ 20)+"px")
+       .style("position", "absolute")
+     }
+     else{
+       Tooltip
+       // titre en gras
+       .style("stroke", "black")
+       .html("The tittle is: " + d+"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0])
+       .style("left", (event.pageX-240 )+ "px")
+       .style("top",  (event.pageY+ 20)+"px")
+       .style("position", "absolute")
+     }
+     
+         }
+    }
     const mouseover = function (event, d) {
 
       //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y
@@ -569,15 +613,12 @@ export class MyComponent {
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
+        Tooltip
+        .style("opacity", 1)
      
-      Tooltip
-      // titre en gras
-      .style("stroke", "black")
-      .style("opacity", 1)
-      .html("The tittle is: " + d)
-      .style("left", (event.pageX-240 )+ "px")
-      .style("top",  event.pageY+ "px")
-      .style("position", "absolute")
+        d3.select(this)
+    .style("stroke", "black")
+    .style("opacity", 1)
 
     }
     const mouseleave = function (event) {
@@ -617,7 +658,7 @@ export class MyComponent {
       // I translate this element to its right position on the x axis
       .attr("transform", function (d) { return "translate(" + x(d) + ")"; })
       // And I build the axis with the call function
-      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mouseleave", mouseleave); })
+      .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave); })
       // Add axis title
       .append("text")
       .style("text-anchor", "middle")
