@@ -574,11 +574,15 @@ export class MyComponent {
  
          }
          if(tmptitle.includes(d)){
+            //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
+      var selected ;
+      data1.forEach(function (value) { if(value.title==d){ selected = value}});
+  
          if(tmplong.length>1){
        Tooltip
        // titre en gras
        .style("stroke", "black")
-       .html("The tittle is: " + d+"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0]+"<br>"+"second id length : "+tmplong[1])
+       .html("The tittle is: " + d+ /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>"+"second id length : "+tmplong[1])
        .style("left", (event.pageX-240 )+ "px")
        .style("top",  (event.pageY+ 20)+"px")
        .style("position", "absolute")
@@ -587,7 +591,7 @@ export class MyComponent {
        Tooltip
        // titre en gras
        .style("stroke", "black")
-       .html("The tittle is: " + d+"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0])
+       .html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.language + "<br> style de musique : " + selected.genre )
        .style("left", (event.pageX-240 )+ "px")
        .style("top",  (event.pageY+ 20)+"px")
        .style("position", "absolute")
@@ -597,10 +601,7 @@ export class MyComponent {
     }
     const mouseover = function (event, d) {
 
-      //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y
-      var selected ;
-    data1.forEach(function (value) { if(value.title==d){ selected = value}});
-
+     
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
