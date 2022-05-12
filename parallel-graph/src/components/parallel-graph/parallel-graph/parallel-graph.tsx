@@ -435,8 +435,8 @@ export class MyComponent {
     
     
     var k = 0 ;
-    var val =   Object.values(data1[10]);
-   // console.log("data1 0 : " +data1[0].title);
+    var val =   Object.values(data1[1]);
+    console.log("data1 10 : " +data1[1].length);
     
     var valStr =  val.toString( ) ;
     
@@ -473,19 +473,23 @@ export class MyComponent {
 
       var catToTest = valStr.substring(0,valStr.indexOf(","));
      valStr = valStr.substring(catToTest.length+1,valStr.length);
-     console.log("catToTest : " + catToTest);
+     //console.log("catToTest : " + catToTest);
      var type = "";
-      var cTT: number = +catToTest;
-
+     
+      var cTT: number = 0;
+      cTT = +catToTest;
+      console.log("cTT : " + cTT);
  
-      if(catToTest!=""){
-        type = "nombre";
-      }else{
+      if(isNaN(cTT)){
         type = "string";
+      }else{
+        type = "nombre";
       }
      
       const name = dimensions[i] ;
 
+
+      
       if (name == "length") {
         y[name] = d3.scalePoint()// scale point
           .domain(longueur)
@@ -518,6 +522,15 @@ export class MyComponent {
           .range([height, 20])
       }
 
+
+
+
+      //TODO: prend la bonne catégorie mais bug quand même, à fix 
+      if(type == "nombre"){
+        console.log("nombre");
+      }else{
+        console.log("texte");
+      }
       // automatisation des noms des colonnes (à fix)
    /*
       if(type == "nombre"){
