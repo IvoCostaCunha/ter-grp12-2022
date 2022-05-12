@@ -413,6 +413,7 @@ export class MyComponent {
       height = 1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
     svg.append("g")
+    
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
@@ -423,6 +424,16 @@ export class MyComponent {
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
     
+    
+    var k = 0 ;
+    var val =   Object.values(data1[10]);
+   // console.log("data1 0 : " +data1[0].title);
+    
+    var valStr =  val.toString( ) ;
+    
+    //console.log("type of value : " + typeof val);
+
+
     const title = [];
     let longueur = [];
     const format = [];
@@ -430,6 +441,7 @@ export class MyComponent {
     const isClassic = [];
     const language = []
     for (var t = 0; t < data1.length; t++) {
+     
       longueur.push(data1[t]["length"])
       title.push(data1[t].title)
       format.push(data1[t].format)
@@ -438,7 +450,7 @@ export class MyComponent {
       language.push(data1[t].language)
 
     }
-
+    
     let bonneLongueur = longueur.filter(d => d != "undefined")
     bonneLongueur.sort((a,b)=> +b-(+a))
 
@@ -446,7 +458,25 @@ export class MyComponent {
     longueur = bonneLongueur
 
     for (var i in dimensions) {
-      const name = dimensions[i]
+
+      k++;
+      var j = 0 ;
+
+      var catToTest = valStr.substring(0,valStr.indexOf(","));
+     valStr = valStr.substring(catToTest.length+1,valStr.length);
+     console.log("catToTest : " + catToTest);
+     var type = "";
+      var cTT: number = +catToTest;
+
+ 
+      if(catToTest!=""){
+        type = "nombre";
+      }else{
+        type = "string";
+      }
+     
+      const name = dimensions[i] ;
+
       if (name == "length") {
         y[name] = d3.scalePoint()// scale point
           .domain(longueur)
@@ -479,6 +509,23 @@ export class MyComponent {
           .range([height, 20])
       }
 
+      // automatisation des noms des colonnes (à fix)
+   /*
+      if(type == "nombre"){
+        y[name] = d3.scaleLinear()// scale point
+          .domain( d3.extent(data1, function(d) {return +d[name]; }) ) // 
+          .range([height, 20])
+        }
+        else{
+          y[name] = d3.scalePoint()// scale point
+          .domain( ["setosa","versicolor", "virginica"] */
+          /*d3.extent(data, function(d) { console.log(d["Species"]) ;return d["Species"]; }) */
+         /* ) 
+          .range([height, 20])
+        }
+*/
+
+    
     }
 
     // Build the X scale -> it find the best position for each Y axis
@@ -505,6 +552,11 @@ export class MyComponent {
     .style("border-radius", "5px")
 
     const mouseover = function (event, d) {
+
+      //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y
+      var selected ;
+    data1.forEach(function (value) { if(value.title==d){ selected = value}});
+
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
