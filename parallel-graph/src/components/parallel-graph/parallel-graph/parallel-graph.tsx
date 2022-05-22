@@ -1,7 +1,7 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
-import { format } from '../../../utils/utils';
+
 @Component({
   tag: 'parallel-graph',
   styleUrl: 'parallel-graph.css',
@@ -32,7 +32,7 @@ export class MyComponent {
     "language": "eng", "length": "200", "title": "test"}};
     
     this.getDataPhaseB(testData);*/
-    this.currentArtist = "Shakira";
+    this.currentArtist = "Queen";
     this.changeArtistName("Queen");
     this.loadGraph();
   }
@@ -268,12 +268,12 @@ export class MyComponent {
 
       else choice = "undefined detected";
 
+
       song["title"] = songs[index]["title"];
-      //song["id"] = songs[index]["id"];
+      song["id"] = songs[index]["id"];
 
       song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
       song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
-
       song["isClassic"] = songs[index]["isClassic"];
 
       if (choice == "format&genre") {
@@ -357,6 +357,7 @@ export class MyComponent {
         }
       }
     })
+    console.table(songsB);
     return songsB;
   }
 
@@ -417,7 +418,6 @@ export class MyComponent {
     svg.append("g")
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
-
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d })
@@ -506,7 +506,7 @@ export class MyComponent {
     .style("border-width", "2px")
     .style("border-radius", "5px")
 
-    const mouseover = function (event, d) {
+   const mouseover = function (event, d) {
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
