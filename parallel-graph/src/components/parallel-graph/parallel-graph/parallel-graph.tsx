@@ -578,33 +578,38 @@ export class MyComponent {
       let tmptitle = [];
       let tmplong = [];
          for (var t = 0; t < data1.length; t++) {
-         if (d==data1[t].title){
-           tmptitle.push(data1[t].title)
-           if (!tmplong.includes(data1[t].length)){
-           tmplong.push(data1[t].length)
-         }
-         }
- 
-         }
+           if (d==data1[t].title){
+            tmptitle.push(data1[t].title)
+              if (!tmplong.includes(data1[t].length)){
+              //récupere la longeur 
+                tmplong.push(data1[t].length)
+               }
+             }
+           }
+
          if(tmptitle.includes(d)){
             //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
-      var selected ;
-      data1.forEach(function (value) { if(value.title==d){ selected = value}});
+      var selected = null;
+      var  selected2 = null;
+      // si le titre match on reecuperes les données dans selected
+      data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
+     console.log("selected : " + selected);
+     console.log("selected2 : " + selected2);
+ 
   
          if(tmplong.length>1){
        Tooltip
        // titre en gras
        .style("stroke", "black")
-       .html("The tittle is: " + d+ /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>"+"second id length : "+tmplong[1])
+       .html("The tittle is: " + d+ /*"<br>"+"number of id : " +tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>"+"second id length : "+tmplong[1])
        .style("left", (event.pageX-240 )+ "px")
        .style("top",  (event.pageY+ 20)+"px")
        .style("position", "absolute")
-     }
-     else{
+     }else{
        Tooltip
        // titre en gras
        .style("stroke", "black")
-       .html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.language + "<br> style de musique : " + selected.genre )
+       .html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.id + "<br> style de musique : " + selected2.id )
        .style("left", (event.pageX-240 )+ "px")
        .style("top",  (event.pageY+ 20)+"px")
        .style("position", "absolute")
