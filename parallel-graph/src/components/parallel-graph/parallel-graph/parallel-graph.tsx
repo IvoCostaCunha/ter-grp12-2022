@@ -420,7 +420,7 @@ export class MyComponent {
         "translate(" + margin.left + "," + margin.top + ")");
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-    const dimensions = Object.keys(data1[0]).filter(function (d) { return d })
+    const dimensions = Object.keys(data1[0]).filter(function (d) { return d != "id" })
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
