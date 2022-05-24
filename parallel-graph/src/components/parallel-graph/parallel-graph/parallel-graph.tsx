@@ -35,12 +35,12 @@ export class MyComponent {
     this.changeArtistName("Queen");
     this.loadGraph();
   }
-//------------------------------------- BASE DE DONNEES ----------------------------------------//
+  //------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
     let xmlHttpReq = new XMLHttpRequest();
     xmlHttpReq.open("GET", url, false);
     xmlHttpReq.send(null);
-    if(xmlHttpReq.status == 200) {
+    if (xmlHttpReq.status == 200) {
       return xmlHttpReq.responseText;
     }
     else {
@@ -58,11 +58,11 @@ export class MyComponent {
   }
 
   private loadGraph() {
-    let divT= select(this.element.shadowRoot.querySelectorAll(".tool")[0])
+    let divT = select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildParalleGraph(svg,divT);
+    this.buildParalleGraph(svg, divT);
   }
 
   private changeArtistName(artistName) {
@@ -88,21 +88,21 @@ export class MyComponent {
 
     let json;
 
-    if(this.getData(artist) == "404") {
-      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: orange");
-      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Artist name not found on Wasabi.";
+    if (this.getData(artist) == "404") {
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style", "color: orange");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML = "Artist name not found on Wasabi.";
       console.log("Artist name not found on Wasabi.");
       return null;
     }
-    else if(this.getData(artist) == "429") {
-      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: red");
-      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Too many requests on Wasabi.";
+    else if (this.getData(artist) == "429") {
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style", "color: red");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML = "Too many requests on Wasabi.";
       console.log("Too many requests on Wasabi.")
       return null;
     }
     else {
-      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style","color: green");
-      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML =  "Request OK.";
+      this.element.shadowRoot.querySelectorAll(".log")[0].setAttribute("style", "color: green");
+      this.element.shadowRoot.querySelectorAll(".log")[0].innerHTML = "Request OK.";
       console.log("Request OK.");
 
       json = JSON.parse(this.getData(artist));
@@ -170,8 +170,8 @@ export class MyComponent {
           if (song["language_detect"] != "") {
             songObj.language = song["language_detect"];
           }
-          else{
-            songObj.language="empty";
+          else {
+            songObj.language = "empty";
           }
         }
         else {
@@ -416,13 +416,13 @@ export class MyComponent {
 
 
 
-  buildParalleGraph(svg,divT) {
+  buildParalleGraph(svg, divT) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
     let data1 = this.getDataPhaseB(this.dataObj);
     svg.append("g")
-    
+
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
@@ -432,14 +432,14 @@ export class MyComponent {
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
-    
-    
-    var k = 0 ;
-    var val =   Object.values(data1[1]);
-    console.log("data1 10 : " +data1[1].length);
-    
-    var valStr =  val.toString( ) ;
-    
+
+
+    var k = 0;
+    var val = Object.values(data1[1]);
+    console.log("data1 10 : " + data1[1].length);
+
+    var valStr = val.toString();
+
     //console.log("type of value : " + typeof val);
 
 
@@ -450,7 +450,7 @@ export class MyComponent {
     const isClassic = [];
     const language = []
     for (var t = 0; t < data1.length; t++) {
-     
+
       longueur.push(data1[t].length)
       title.push(data1[t].title)
       format.push(data1[t].format)
@@ -459,9 +459,9 @@ export class MyComponent {
       language.push(data1[t].language)
 
     }
-    
+
     let bonneLongueur = longueur.filter(d => d != "undefined")
-    bonneLongueur.sort((a,b)=> +b-(+a))
+    bonneLongueur.sort((a, b) => +b - (+a))
 
     bonneLongueur.splice(0, 0, "undefined")
     longueur = bonneLongueur
@@ -469,27 +469,27 @@ export class MyComponent {
     for (var i in dimensions) {
 
       k++;
-      var j = 0 ;
+      var j = 0;
 
-      var catToTest = valStr.substring(0,valStr.indexOf(","));
-     valStr = valStr.substring(catToTest.length+1,valStr.length);
-     //console.log("catToTest : " + catToTest);
-     var type = "";
-     
+      var catToTest = valStr.substring(0, valStr.indexOf(","));
+      valStr = valStr.substring(catToTest.length + 1, valStr.length);
+      //console.log("catToTest : " + catToTest);
+      var type = "";
+
       var cTT: number = 0;
       cTT = +catToTest;
       console.log("cTT : " + cTT);
- 
-      if(isNaN(cTT)){
+
+      if (isNaN(cTT)) {
         type = "string";
-      }else{
+      } else {
         type = "nombre";
       }
-     
-      const name = dimensions[i] ;
+
+      const name = dimensions[i];
 
 
-      
+
       if (name == "length") {
         y[name] = d3.scalePoint()// scale point
           .domain(longueur)
@@ -526,28 +526,28 @@ export class MyComponent {
 
 
       //TODO: prend la bonne catégorie mais bug quand même, à fix 
-      if(type == "nombre"){
+      if (type == "nombre") {
         console.log("nombre");
-      }else{
+      } else {
         console.log("texte");
       }
       // automatisation des noms des colonnes (à fix)
-   /*
-      if(type == "nombre"){
-        y[name] = d3.scaleLinear()// scale point
-          .domain( d3.extent(data1, function(d) {return +d[name]; }) ) // 
-          .range([height, 20])
-        }
-        else{
-          y[name] = d3.scalePoint()// scale point
-          .domain( ["setosa","versicolor", "virginica"] */
-          /*d3.extent(data, function(d) { console.log(d["Species"]) ;return d["Species"]; }) */
-         /* ) 
-          .range([height, 20])
-        }
+      /*
+         if(type == "nombre"){
+           y[name] = d3.scaleLinear()// scale point
+             .domain( d3.extent(data1, function(d) {return +d[name]; }) ) // 
+             .range([height, 20])
+           }
+           else{
+             y[name] = d3.scalePoint()// scale point
+             .domain( ["setosa","versicolor", "virginica"] */
+      /*d3.extent(data, function(d) { console.log(d["Species"]) ;return d["Species"]; }) */
+      /* ) 
+       .range([height, 20])
+     }
 */
 
-    
+
     }
 
     // Build the X scale -> it find the best position for each Y axis
@@ -557,69 +557,80 @@ export class MyComponent {
       .domain(dimensions);
 
     function addslashes(ch) {
-      ch= "a"+ch
+      ch = "a" + ch
       ch = ch.replace(/\s+/g, '')
       ch = ch.replace(/['"]+/g, '')
       ch = ch.replace(/[^\w\s!?]/g, '')
       ch = ch.replace(/\?/g, '')
       return ch.toLowerCase()
     }
-//-------------------Tooltip --------------------------//
+    //-------------------Tooltip --------------------------//
 
 
     var Tooltip = divT.append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "#d2ebbe")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    var mousemove = function(event,d) {
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "#d2ebbe")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+    var mousemove = function (event, d) {
       let tmptitle = [];
       let tmplong = [];
-         for (var t = 0; t < data1.length; t++) {
-           if (d==data1[t].title){
-            tmptitle.push(data1[t].title)
-              if (!tmplong.includes(data1[t].length)){
-              //récupere la longeur 
-                tmplong.push(data1[t].length)
-               }
-             }
-           }
+      for (var t = 0; t < data1.length; t++) {
+        if (d == data1[t].title) {
+          tmptitle.push(data1[t].title)
+          if (!tmplong.includes(data1[t].length)) {
+            //récupere la longeur 
+            tmplong.push(data1[t].length)
+          }
+        }
+      }
 
-         if(tmptitle.includes(d)){
-            //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
-      var selected = null;
-      var  selected2 = null;
-      // si le titre match on reecuperes les données dans selected
-      data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
-     console.log("selected : " + selected);
-     console.log("selected2 : " + selected2);
- 
-  
-         if(tmplong.length>1){
-       Tooltip
-       // titre en gras
-       .style("stroke", "black")
-       .html("The tittle is: " + d+ /*"<br>"+"number of id : " +tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>"+"second id length : "+tmplong[1])
-       .style("left", (event.pageX-240 )+ "px")
-       .style("top",  (event.pageY+ 20)+"px")
-       .style("position", "absolute")
-     }else{
-       Tooltip
-       // titre en gras
-       .style("stroke", "black")
-       .html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.id + "<br> style de musique : " + selected2.id )
-       .style("left", (event.pageX-240 )+ "px")
-       .style("top",  (event.pageY+ 20)+"px")
-       .style("position", "absolute")
-     }
-     
-         }
+      if (tmptitle.includes(d)) {
+        //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
+        var selectedArray = [];
+        var selected ;
+      
+        // si le titre match on reecuperes les données dans selected
+        //data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
+
+        data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
+        var HTML ="";
+       
+        selectedArray.forEach(selected => {
+          console.log("selected  : "+ selected);
+          Object.keys(selected).forEach(category => { 
+            console.log("category : "+category+"selected.cat  : "+ selected.category);  
+            HTML += category + " : "+ selected.category + " \n" ;
+          })
+          console.log("HTML : "+ HTML);
+
+        })
+        if (tmplong.length > 1) {
+          Tooltip
+            // titre en gras
+            .style("stroke", "black")
+            .html("The tittle is: " + d + /*"<br>"+"number of id : " +tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>" + "second id length : " + tmplong[1])
+            .style("left", (event.pageX - 240) + "px")
+            .style("top", (event.pageY + 20) + "px")
+            .style("position", "absolute")
+        } else {
+          Tooltip
+            // titre en gras
+            .style("stroke", "black")
+            .html(HTML)
+            //.html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.language + "<br> style de musique : " + selected2.id)
+            .style("left", (event.pageX - 240) + "px")
+            .style("top", (event.pageY + 20) + "px")
+            .style("position", "absolute")
+        }
+
+      }
     }
     const mouseover = function (event, d) {
 
-     
+
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
@@ -632,12 +643,12 @@ export class MyComponent {
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
-        Tooltip
+      Tooltip
         .style("opacity", 1)
-     
-        d3.select(this)
-    .style("stroke", "black")
-    .style("opacity", 1)
+
+      d3.select(this)
+        .style("stroke", "black")
+        .style("opacity", 1)
 
     }
     const mouseleave = function (event) {
@@ -645,9 +656,9 @@ export class MyComponent {
         .style("stroke", "#69b3a2")
         .style("opacity", "1")
         .style("stroke-width", "0.7px")
-        Tooltip
+      Tooltip
         .style("opacity", 0)
-        d3.select(this)
+      d3.select(this)
         .style("stroke", "none")
         .style("opacity", 0.8)
     }
@@ -660,7 +671,7 @@ export class MyComponent {
       .selectAll("myPath")
       .data(data1)
       .join("path")
-      .attr("class", function (d) { return "line " + addslashes(d.title) + " " +  addslashes(d.language) + " "+ addslashes(d.format)+" "+ addslashes(d.genre) +" "+ addslashes(d.length)+" "+ addslashes(d.isClassic)})
+      .attr("class", function (d) { return "line " + addslashes(d.title) + " " + addslashes(d.language) + " " + addslashes(d.format) + " " + addslashes(d.genre) + " " + addslashes(d.length) + " " + addslashes(d.isClassic) })
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", "#69b3a2")
@@ -698,7 +709,7 @@ export class MyComponent {
           <h1>Parallel graph</h1>
 
           <form onSubmit={(e) => this.handleSubmit(e)}>
-            <label> 
+            <label>
               Search artist name:  <input class="input-search" type="text" value={this.newArtist} onInput={(event) => this.handleChange(event)} />
             </label>
             <input type="submit" value="Search" />
