@@ -599,10 +599,17 @@ export class MyComponent {
         var HTML ="";
        
         selectedArray.forEach(selected => {
-          console.log("selected  : "+ selected);
-          Object.keys(selected).forEach(category => { 
-            console.log("category : "+category+"selected.cat  : "+ selected.category);  
-            HTML += category + " : "+ selected.category + " \n" ;
+       var NombreCategories = Object.entries(selected).length;
+       var separateur = 0;
+       var coupleCatVal = "";
+       console.log("NombreCategories : " + NombreCategories);
+          Object.entries(selected).forEach(category => { 
+            
+            if(separateur%NombreCategories==0){HTML +="<br> --------------------------<br> ";}
+            separateur++;
+            coupleCatVal += category[0] + " : " +  category[1] ;
+             HTML += coupleCatVal +" <br>" ;
+             coupleCatVal = "";
           })
           console.log("HTML : "+ HTML);
 
