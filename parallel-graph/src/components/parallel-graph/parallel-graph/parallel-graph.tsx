@@ -268,11 +268,11 @@ export class MyComponent {
 
 
       song["title"] = songs[index]["title"];
-      song["id"] = songs[index]["id"];
 
       song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
       song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
       song["isClassic"] = songs[index]["isClassic"];
+      song["id"] = songs[index]["id"];
 
       if (choice == "format&genre") {
         for (let i = 0; i < nbFormat; i++) {
@@ -355,7 +355,7 @@ export class MyComponent {
         }
       }
     })
-    console.table(songsB);
+    //console.table(songsB);
     return songsB;
   }
 
@@ -428,7 +428,7 @@ export class MyComponent {
 
     var k = 0;
     var val = Object.values(data1[1]);
-    console.log("data1 10 : " + data1[1].length);
+    console.log("data1 10 : " , data1[1].length);
 
     var valStr = val.toString();
 
@@ -590,7 +590,7 @@ export class MyComponent {
         data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
         var HTML ="";
        
-        selectedArray.forEach(selected => {
+       selectedArray.forEach(selected => {
        var NombreCategories = Object.entries(selected).length;
        var separateur = 0;
        var coupleCatVal = "";
