@@ -266,12 +266,12 @@ export class MyComponent {
 
       else choice = "undefined detected";
 
+
       song["title"] = songs[index]["title"];
-      //song["id"] = songs[index]["id"];
+      song["id"] = songs[index]["id"];
 
       song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
       song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
-
       song["isClassic"] = songs[index]["isClassic"];
 
       if (choice == "format&genre") {
@@ -355,6 +355,7 @@ export class MyComponent {
         }
       }
     })
+    console.table(songsB);
     return songsB;
   }
 
@@ -406,15 +407,7 @@ export class MyComponent {
     return value
   }
 
-
-
-
-
-
   //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
-
-
-
 
   buildParalleGraph(svg, divT) {
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
@@ -425,7 +418,6 @@ export class MyComponent {
 
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
-
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d })
