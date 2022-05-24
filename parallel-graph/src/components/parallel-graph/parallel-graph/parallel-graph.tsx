@@ -267,12 +267,12 @@ export class MyComponent {
       else choice = "undefined detected";
 
 
+      song["id"] = songs[index]["id"];
       song["title"] = songs[index]["title"];
 
       song["language"] = songs[index]["language"] != undefined ? songs[index]["language"] : "undefined";
       song["length"] = songs[index]["length"] != undefined ? songs[index]["length"].toString() : "undefined";
       song["isClassic"] = songs[index]["isClassic"];
-      song["id"] = songs[index]["id"];
 
       if (choice == "format&genre") {
         for (let i = 0; i < nbFormat; i++) {
@@ -355,7 +355,7 @@ export class MyComponent {
         }
       }
     })
-    //console.table(songsB);
+    console.table(songsB);
     return songsB;
   }
 
