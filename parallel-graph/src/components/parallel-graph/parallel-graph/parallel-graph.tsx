@@ -421,14 +421,15 @@ export class MyComponent {
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d != "id" })
-
+    const categories = Object.keys(data1[0]);
+   
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
 
 
     var k = 0;
     var val = Object.values(data1[1]);
-    console.log("data1 10 : " , data1[1].length);
+    //console.log("data1 10 : " , data1[1].length);
 
     var valStr = val.toString();
 
@@ -463,22 +464,8 @@ export class MyComponent {
       k++;
       var j = 0;
 
-      var catToTest = valStr.substring(0, valStr.indexOf(","));
-      valStr = valStr.substring(catToTest.length + 1, valStr.length);
-      //console.log("catToTest : " + catToTest);
-      var type = "";
-
-      var cTT: number = 0;
-      cTT = +catToTest;
-      console.log("cTT : " + cTT);
-
-      if (isNaN(cTT)) {
-        type = "string";
-      } else {
-        type = "nombre";
-      }
-
       const name = dimensions[i];
+      console.log("name : "  + name);
 
 
 
@@ -512,33 +499,16 @@ export class MyComponent {
         y[name] = d3.scalePoint()// scale point
           .domain(language) // 
           .range([height, 20])
-      }
+      } 
 
 
-
-
-      //TODO: prend la bonne catégorie mais bug quand même, à fix 
-      if (type == "nombre") {
-        console.log("nombre");
-      } else {
-        console.log("texte");
-      }
-      // automatisation des noms des colonnes (à fix)
       /*
-         if(type == "nombre"){
-           y[name] = d3.scaleLinear()// scale point
-             .domain( d3.extent(data1, function(d) {return +d[name]; }) ) // 
-             .range([height, 20])
-           }
-           else{
-             y[name] = d3.scalePoint()// scale point
-             .domain( ["setosa","versicolor", "virginica"] */
-      /*d3.extent(data, function(d) { console.log(d["Species"]) ;return d["Species"]; }) */
-      /* ) 
-       .range([height, 20])
-     }
-*/
-
+// à remplacer par : 
+      y[name] = d3.scalePoint()// scale point
+      .domain(name)
+      .range([height, 20])
+  */
+ 
 
     }
 
@@ -568,6 +538,7 @@ export class MyComponent {
       .style("border-radius", "5px")
     var mousemove = function (event, d) {
       let tmptitle = [];
+      //probablement retirable
       let tmplong = [];
       for (var t = 0; t < data1.length; t++) {
         if (d == data1[t].title) {
