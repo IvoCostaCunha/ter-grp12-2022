@@ -33,7 +33,8 @@ export class MyComponent {
     this.getDataPhaseB(testData);*/
     this.currentArtist = "Queen";
     this.changeArtistName("Queen");
-    this.loadGraph();
+    //this.loadGraph();
+    
   }
   //------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
@@ -58,17 +59,22 @@ export class MyComponent {
   }
 
   private loadGraph() {
+    
     let divT = select(this.element.shadowRoot.querySelectorAll(".tool")[0])
+    let dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add2")[0])
+      .append('select')
     let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildParalleGraph(svg, divT);
+    this.buildParalleGraph(svg, divT,dropdownButton);
   }
 
   private changeArtistName(artistName) {
+ 
     this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = "loading...";
     this.analyseData(artistName);
     this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = '<svg class="chart" />';
+
     this.loadGraph();
   }
 
@@ -409,7 +415,9 @@ export class MyComponent {
 
   //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
 
-  buildParalleGraph(svg, divT) {
+  buildParalleGraph(svg, divT,dropdownButton) {
+  
+
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
@@ -422,12 +430,38 @@ export class MyComponent {
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d != "id" })
     const categories = Object.keys(data1[0]);
-   
+    var allGroup = ["","id"]
+    // Initialize the button
+    // add the options to the button
+    dropdownButton // Add a button
+      .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+       .data(allGroup)
+      .enter()
+      .append('option')
+      .text(function (d) { return d; }) // text showed in the menu
+      .attr("value", function (d) { return d; }) 
+      function updateDimension(name) {
+       dimensions.push(name)
+ 
+      }
+      
+      // When the button is changed, run the updateChart function
+      dropdownButton.on("change", function(d) {
+      
+          // recover the option that has been chosen
+          var selectedOption = d3.select(this).property("value")
+      
+          // run the updateChart function with this selected option
+          if (!dimensions.includes(selectedOption) && selectedOption!="" ){
+          updateDimension(selectedOption)
+          console.log(dimensions)
+        }
+      })
+
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
 
 
-    var k = 0;
     var val = Object.values(data1[1]);
     //console.log("data1 10 : " , data1[1].length);
 
@@ -442,7 +476,7 @@ export class MyComponent {
     const genre = [];
     const isClassic = [];
     const language = []
-
+    const id = []
 
 
     for (var t = 0; t < data1.length; t++) {
@@ -453,7 +487,7 @@ export class MyComponent {
       genre.push(data1[t].genre)
       isClassic.push(data1[t].isClassic)
       language.push(data1[t].language)
-
+      id.push(data1[t].id)
     }
     
     
@@ -466,18 +500,16 @@ export class MyComponent {
   });
 }
 
-
+    // ordre croissant
     let bonneLongueur = longueur.filter(d => d != "undefined");
     bonneLongueur.sort((a, b) => +b - (+a));
 
     bonneLongueur.splice(0, 0, "undefined");
     longueur = bonneLongueur;
-
+    //--------------------------------------------//
     for (var i in dimensions) {
 
-      k++;
       var j = 0;
-
       const name = dimensions[i];
       console.log("name : "  + name);
 
@@ -506,6 +538,12 @@ export class MyComponent {
 
         y[name] = d3.scalePoint()// scale point
           .domain(isClassic) // 
+          .range([height, 20])
+      }
+      else if (name == "id") {
+
+        y[name] = d3.scalePoint()// scale point
+          .domain(id) // 
           .range([height, 20])
       }
       else {
@@ -546,7 +584,7 @@ export class MyComponent {
     var Tooltip = divT.append("div")
       .style("opacity", 0)
       .attr("class", "tooltip")
-      .style("background-color", "#d2ebbe")
+      .style("background-color", "#70bead")
       .style("border", "solid")
       .style("border-width", "2px")
       .style("border-radius", "5px")
@@ -585,8 +623,8 @@ export class MyComponent {
         
             Object.entries( NewselectedArray[0] ).forEach(selected => { 
               var newselected= selected[0];
-              console.log("selected0 : " + newselected );
-              console.log("meme id, infos diff : " + NewselectedArray[0].newselected + " et " + song.newselected)
+              //console.log("selected0 : " + newselected );
+              //console.log("meme id, infos diff : " + NewselectedArray[0].newselected + " et " + song.newselected)
                 if(NewselectedArray[0].newselected != song.newselected){
                     song.selected+= " ," + NewselectedArray[0].newselected;
                     NewselectedArray.splice[NewselectedArray.length];
@@ -600,7 +638,7 @@ export class MyComponent {
         var HTML ="";
         var firstSong = true;
       // fusionner id differents 
-        console.log("selectedArray : " + selectedArray[0]);
+       // console.log("selectedArray : " + selectedArray[0]);
 
 
        selectedArray.forEach(selected => {
@@ -608,7 +646,7 @@ export class MyComponent {
        var separateur = 0;
        var coupleCatVal = "";
       
-       console.log("NombreCategories : " + NombreCategories);
+       //console.log("NombreCategories : " + NombreCategories);
           Object.entries(selected).forEach(category => { 
            
             if(!firstSong){
@@ -654,9 +692,12 @@ export class MyComponent {
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
+        for (var t = 0; t < data1.length; t++) {
+        if (d == data1[t].title) {
       Tooltip
         .style("opacity", 1)
-
+        }
+      }
       d3.select(this)
         .style("stroke", "black")
         .style("opacity", 1)
@@ -704,7 +745,7 @@ export class MyComponent {
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
-      .text(function (d) { return d; })
+      .text(function (d) {console.log(d); return d; })
       .style("fill", "black")
 
 
@@ -733,7 +774,11 @@ export class MyComponent {
 
         <div class="tool">
           <svg class="chart" />
+         
         </div>
+        <div class="add">
+          <div class="add2"></div>
+           </div>
       </Host>
     )
   }
