@@ -442,6 +442,9 @@ export class MyComponent {
     const genre = [];
     const isClassic = [];
     const language = []
+
+
+
     for (var t = 0; t < data1.length; t++) {
 
       longueur.push(data1[t].length)
@@ -452,12 +455,23 @@ export class MyComponent {
       language.push(data1[t].language)
 
     }
+    
+    
 
-    let bonneLongueur = longueur.filter(d => d != "undefined")
-    bonneLongueur.sort((a, b) => +b - (+a))
+    //à remplacer par 
+    //où servent les array title etc?
+    for (var t = 0; t < data1.length; t++) {
+    categories.forEach(cat => {
+      Array.from(cat).push(data1[t].cat);
+  });
+}
 
-    bonneLongueur.splice(0, 0, "undefined")
-    longueur = bonneLongueur
+
+    let bonneLongueur = longueur.filter(d => d != "undefined");
+    bonneLongueur.sort((a, b) => +b - (+a));
+
+    bonneLongueur.splice(0, 0, "undefined");
+    longueur = bonneLongueur;
 
     for (var i in dimensions) {
 
@@ -466,7 +480,6 @@ export class MyComponent {
 
       const name = dimensions[i];
       console.log("name : "  + name);
-
 
 
       if (name == "length") {
@@ -502,13 +515,14 @@ export class MyComponent {
       } 
 
 
-      /*
+    /*  
 // à remplacer par : 
       y[name] = d3.scalePoint()// scale point
       .domain(name)
       .range([height, 20])
-  */
- 
+      
+  console.log( "y[name] :  " + y[name] );
+ */
 
     }
 
