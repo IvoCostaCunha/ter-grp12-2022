@@ -589,15 +589,22 @@ export class MyComponent {
 
         data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
         var HTML ="";
-       
+        var firstSong = true;
        selectedArray.forEach(selected => {
        var NombreCategories = Object.entries(selected).length;
        var separateur = 0;
        var coupleCatVal = "";
+      
        console.log("NombreCategories : " + NombreCategories);
           Object.entries(selected).forEach(category => { 
-            
-            if(separateur%NombreCategories==0){HTML +="<br> --------------------------<br> ";}
+           
+            if(!firstSong){
+              console.log("firstSong false ");
+              if(separateur%NombreCategories==0){HTML +="<br> --------------------------<br> ";}
+            }else{
+              console.log("firstSong true ");
+              firstSong = false;
+            }
             separateur++;
             coupleCatVal += category[0] + " : " +  category[1] ;
              HTML += coupleCatVal +" <br>" ;
