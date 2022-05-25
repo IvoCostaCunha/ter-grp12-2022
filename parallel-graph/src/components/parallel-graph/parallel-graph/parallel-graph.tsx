@@ -567,14 +567,42 @@ export class MyComponent {
       if (tmptitle.includes(d)) {
         //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
         var selectedArray = [];
-        var selected ;
-      
+        var NewselectedArray = [];
+       
         // si le titre match on reecuperes les données dans selected
         //data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
 
         data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
+   
+        NewselectedArray.push(selectedArray[0]);
+        var tempID = selectedArray[0].id ;
+        selectedArray.forEach(song =>{
+     
+        if(song.id!=tempID){
+          NewselectedArray.push(song);
+           tempID = song.id;
+        }else{
+        
+            Object.entries( NewselectedArray[0] ).forEach(selected => { 
+              var newselected= selected[0];
+              console.log("selected0 : " + newselected );
+              console.log("meme id, infos diff : " + NewselectedArray[0].newselected + " et " + song.newselected)
+                if(NewselectedArray[0].newselected != song.newselected){
+                    song.selected+= " ," + NewselectedArray[0].newselected;
+                    NewselectedArray.splice[NewselectedArray.length];
+                    NewselectedArray.push(song);
+                }
+            });
+        }
+        });
+        selectedArray = NewselectedArray;
+
         var HTML ="";
         var firstSong = true;
+      // fusionner id differents 
+        console.log("selectedArray : " + selectedArray[0]);
+
+
        selectedArray.forEach(selected => {
        var NombreCategories = Object.entries(selected).length;
        var separateur = 0;
@@ -598,15 +626,7 @@ export class MyComponent {
           console.log("HTML : "+ HTML);
 
         })
-        if (tmplong.length > 1) {
-          Tooltip
-            // titre en gras
-            .style("stroke", "black")
-            .html("The tittle is: " + d + /*"<br>"+"number of id : " +tmplong.length+"<br>"+"first id length : "+tmplong[0]+ */ "<br>" + "second id length : " + tmplong[1])
-            .style("left", (event.pageX - 240) + "px")
-            .style("top", (event.pageY + 20) + "px")
-            .style("position", "absolute")
-        } else {
+        
           Tooltip
             // titre en gras
             .style("stroke", "black")
@@ -615,7 +635,7 @@ export class MyComponent {
             .style("left", (event.pageX - 240) + "px")
             .style("top", (event.pageY + 20) + "px")
             .style("position", "absolute")
-        }
+        
 
       }
     }
