@@ -1,8 +1,6 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
-
-
 @Component({
   tag: 'parallel-graph',
   styleUrl: 'parallel-graph.css',
@@ -432,8 +430,6 @@ export class MyComponent {
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
     const dimensions = Object.keys(data1[0]).filter(function (d) { return d != "id" })
     const categories = Object.keys(data1[0]);
-    var  stringToFuseTooltip =categories ;
-    
     var allGroup = ["","id"]
     // Initialize the button
     // add the options to the button
@@ -503,8 +499,6 @@ export class MyComponent {
       Array.from(cat).push(data1[t].cat);
   });
 }
-
-
 
     // ordre croissant
     let bonneLongueur = longueur.filter(d => d != "undefined");
@@ -613,60 +607,12 @@ export class MyComponent {
         var selectedArray = [];
         var NewselectedArray = [];
        
-        // si le titre match on reecuperes les données dans selectedArray
+        // si le titre match on reecuperes les données dans selected
+        //data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
 
         data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
-       
-          
-   //fusionne les catégories des musiques déparées alors que ce sont les mêmes   
-        selectedArray.forEach(function (value) { 
-         
-          Object.entries( value ).forEach(selected => { 
-
-            console.log("selected" + selected);
-            var i = 0;
-            //ajouter après le nom de la catégorie à partir de categories la valeur ([1])
-            Object.entries( selected ).forEach(categorieVal => { 
-              console.log("categorieVal[0] : " + categorieVal);
-             
-
-                if(!stringToFuseTooltip.toString().includes(categorieVal[1].toString() )){
-                 // console.log("stringToFuseTooltip : " + stringToFuseTooltip  + " ne contient pas " + categorieVal[1].toString() );
-
-                  stringToFuseTooltip[i]+= " , " + categorieVal[1];
-                }else{
-                //  console.log("stringToFuseTooltip : " + stringToFuseTooltip  + "  contient  " + categorieVal[1].toString() );
-                }
-                i++;
-             })
-           
-           console.log("str " + stringToFuseTooltip);
-
-            //ici
-          
-          })
-        })
-       
-  
-      var newstringToFuseTooltip = "";
-      console.log(" nombre de categories : " + categories.length);
-      console.log("stringToFuseTooltip[0].substring(0,stringToFuseTooltip[0].indexOf(",")" + stringToFuseTooltip[0].substring(0,stringToFuseTooltip[0].indexOf(",")));
-        //mise en forme à l'interieur d'une musique d'un tooltip
-        for(var j = 0;j<categories.length; j++){
-          newstringToFuseTooltip +=   stringToFuseTooltip[0].substring(0,stringToFuseTooltip[0].indexOf(",")) + " :" +  stringToFuseTooltip[1].substring(0,stringToFuseTooltip[0].indexOf(",")) + "<br>";
-       
-          stringToFuseTooltip[0] =  stringToFuseTooltip[0].substring(stringToFuseTooltip[0].indexOf(","), stringToFuseTooltip[0].length);
-          stringToFuseTooltip[1] =  stringToFuseTooltip[1].substring(stringToFuseTooltip[1].indexOf(","), stringToFuseTooltip[1].length);
-
-        }
-
-     // remplacer L668 par : après fix
-       // NewselectedArray.push(newstringToFuseTooltip);
-        stringToFuseTooltip = [""];
-
-
+   
         NewselectedArray.push(selectedArray[0]);
-
         var tempID = selectedArray[0].id ;
         selectedArray.forEach(song =>{
      
@@ -703,8 +649,6 @@ export class MyComponent {
        //console.log("NombreCategories : " + NombreCategories);
           Object.entries(selected).forEach(category => { 
            
-
-               //mise en forme du tooltip 
             if(!firstSong){
               console.log("firstSong false ");
               if(separateur%NombreCategories==0){HTML +="<br> --------------------------<br> ";}
