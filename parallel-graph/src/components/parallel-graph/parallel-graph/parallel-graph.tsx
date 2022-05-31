@@ -19,7 +19,11 @@ export class MyComponent {
   // Constain valuable information to use in the parallel graph
   @State() dataObj = { artist: "" };
   @State() dataObjInt;
-  @State() dataa;
+  @State() svg;
+  @State() data1;
+  @State() dimensions;
+  @State() categories;
+  @State() group;
   public chartData: any;
 
   componentDidLoad() {
@@ -33,8 +37,25 @@ export class MyComponent {
     this.getDataPhaseB(testData);*/
     this.currentArtist = "Queen";
     this.changeArtistName("Queen");
-    //this.loadGraph();
     
+    console.log(this.dataObj)
+    //this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = '<svg class="chart" />';
+    this.svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
+    this.group= this.svg.append("div").attr("id", "chartgroup");
+    // Extract the list of this.dimensions we want to keep in the plot. Here I keep all except the column called Species
+    this.data1 = this.getDataPhaseB(this.dataObj);
+    this.dimensions = Object.keys(this.data1[0]).filter(function (d) { return d != "id" })
+    this.categories = Object.keys(this.data1[0]);
+   // await this.updateData();
+    console.log(this.data1)
+    this.loadGraph();
+  }
+  private async updateData() {
+    console.log("je suis la")
+    console.log(this.dataObj)
+    this.data1 = this.getDataPhaseB(this.dataObj);
+    this.dimensions = Object.keys(this.data1[0]).filter(function (d) { return d != "id" })
+    this.categories = Object.keys(this.data1[0]);
   }
   //------------------------------------- BASE DE DONNEES ----------------------------------------//
   private httpGet(url: string): string {
@@ -59,23 +80,23 @@ export class MyComponent {
   }
 
   private loadGraph() {
-    
+
     let divT = select(this.element.shadowRoot.querySelectorAll(".tool")[0])
     let dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add2")[0])
       .append('select')
-    let svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
+    this.svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildParalleGraph(svg, divT,dropdownButton);
+      console.log(this.svg)
+    this.buildParalleGraph(divT, dropdownButton);
+
   }
 
   private changeArtistName(artistName) {
- 
-    this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = "loading...";
-    this.analyseData(artistName);
-    this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = '<svg class="chart" />';
 
-    this.loadGraph();
+    //this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = "loading...";
+    this.analyseData(artistName);
+
   }
 
   private handleSubmit(event: Event) {
@@ -414,56 +435,47 @@ export class MyComponent {
   }
 
   //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
-
-  buildParalleGraph(svg, divT,dropdownButton) {
-  
+  private updateDimension(name) {
+    this.dimensions.push(name);
+    this.loadGraph();
+  }
+  buildParalleGraph(divT, dropdownButton) {
 
     var margin = { top: 10, right: 10, bottom: 10, left: 0 },
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
-    let data1 = this.getDataPhaseB(this.dataObj);
-    svg.append("g")
 
-      .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
-
-    // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-    const dimensions = Object.keys(data1[0]).filter(function (d) { return d != "id" })
-    const categories = Object.keys(data1[0]);
-    var allGroup = ["","id"]
+   
+    var allGroup = ["", "id"]
     // Initialize the button
     // add the options to the button
     dropdownButton // Add a button
       .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
-       .data(allGroup)
+      .data(allGroup)
       .enter()
       .append('option')
       .text(function (d) { return d; }) // text showed in the menu
-      .attr("value", function (d) { return d; }) 
-      function updateDimension(name) {
-       dimensions.push(name)
- 
+      .attr("value", function (d) { return d; })
+  
+    const self=this
+    // When the button is changed, run the updateChart function
+    dropdownButton.on("change",  function(d) {
+      // recover the option that has been chosen
+      var selectedOption = d3.select(self).property("value")
+
+      // run the updateChart function with this selected option
+      if (!self.dimensions.includes(selectedOption) && selectedOption != "") {
+        self.updateDimension(selectedOption)
+        console.log(self.dimensions)
       }
-      
-      // When the button is changed, run the updateChart function
-      dropdownButton.on("change", function(d) {
-      
-          // recover the option that has been chosen
-          var selectedOption = d3.select(this).property("value")
-      
-          // run the updateChart function with this selected option
-          if (!dimensions.includes(selectedOption) && selectedOption!="" ){
-          updateDimension(selectedOption)
-          console.log(dimensions)
-        }
-      })
+    })
 
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
 
-
-    var val = Object.values(data1[1]);
-    //console.log("data1 10 : " , data1[1].length);
+console.log(this.data1)
+    var val = Object.values(this.data1[1]);
+    //console.log("this.data1 10 : " , this.data1[1].length);
 
     var valStr = val.toString();
 
@@ -479,26 +491,26 @@ export class MyComponent {
     const id = []
 
 
-    for (var t = 0; t < data1.length; t++) {
+    for (var t = 0; t < this.data1.length; t++) {
 
-      longueur.push(data1[t].length)
-      title.push(data1[t].title)
-      format.push(data1[t].format)
-      genre.push(data1[t].genre)
-      isClassic.push(data1[t].isClassic)
-      language.push(data1[t].language)
-      id.push(data1[t].id)
+      longueur.push(this.data1[t].length)
+      title.push(this.data1[t].title)
+      format.push(this.data1[t].format)
+      genre.push(this.data1[t].genre)
+      isClassic.push(this.data1[t].isClassic)
+      language.push(this.data1[t].language)
+      id.push(this.data1[t].id)
     }
-    
-    
+
+
 
     //à remplacer par 
     //où servent les array title etc?
-    for (var t = 0; t < data1.length; t++) {
-    categories.forEach(cat => {
-      Array.from(cat).push(data1[t].cat);
-  });
-}
+    for (var t = 0; t < this.data1.length; t++) {
+      this.categories.forEach(cat => {
+        Array.from(cat).push(this.data1[t].cat);
+      });
+    }
 
     // ordre croissant
     let bonneLongueur = longueur.filter(d => d != "undefined");
@@ -507,11 +519,11 @@ export class MyComponent {
     bonneLongueur.splice(0, 0, "undefined");
     longueur = bonneLongueur;
     //--------------------------------------------//
-    for (var i in dimensions) {
+    for (var i in this.dimensions) {
 
       var j = 0;
-      const name = dimensions[i];
-      console.log("name : "  + name);
+      const name = this.dimensions[i];
+      console.log("name : " + name);
 
 
       if (name == "length") {
@@ -550,17 +562,17 @@ export class MyComponent {
         y[name] = d3.scalePoint()// scale point
           .domain(language) // 
           .range([height, 20])
-      } 
+      }
 
 
-    /*  
-// à remplacer par : 
-      y[name] = d3.scalePoint()// scale point
-      .domain(name)
-      .range([height, 20])
-      
-  console.log( "y[name] :  " + y[name] );
- */
+      /*  
+  // à remplacer par : 
+        y[name] = d3.scalePoint()// scale point
+        .domain(name)
+        .range([height, 20])
+        
+    console.log( "y[name] :  " + y[name] );
+   */
 
     }
 
@@ -568,7 +580,7 @@ export class MyComponent {
     const x = d3.scalePoint()
       .range([0, width])
       .padding(1)
-      .domain(dimensions);
+      .domain(this.dimensions);
 
     function addslashes(ch) {
       ch = "a" + ch
@@ -592,12 +604,12 @@ export class MyComponent {
       let tmptitle = [];
       //probablement retirable
       let tmplong = [];
-      for (var t = 0; t < data1.length; t++) {
-        if (d == data1[t].title) {
-          tmptitle.push(data1[t].title)
-          if (!tmplong.includes(data1[t].length)) {
+      for (var t = 0; t < self.data1.length; t++) {
+        if (d == self.data1[t].title) {
+          tmptitle.push(self.data1[t].title)
+          if (!tmplong.includes(self.data1[t].length)) {
             //récupere la longeur 
-            tmplong.push(data1[t].length)
+            tmplong.push(self.data1[t].length)
           }
         }
       }
@@ -606,74 +618,74 @@ export class MyComponent {
         //récupères l'id à partir du titre pour connaitre les valeurs à mettre en avant sur les axes en y et ajouter les infos dans la tooltip
         var selectedArray = [];
         var NewselectedArray = [];
-       
-        // si le titre match on reecuperes les données dans selected
-        //data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
 
-        data1.forEach(function (value) { if(value.title==d){ selectedArray.push(value);}});
-   
+        // si le titre match on reecuperes les données dans selected
+        //this.data1.forEach(function (value) { if(value.title==d){ if(selected==null){selected = value;} else{selected2 = value; }}});
+
+        self.data1.forEach(function (value) { if (value.title == d) { selectedArray.push(value); } });
+
         NewselectedArray.push(selectedArray[0]);
-        var tempID = selectedArray[0].id ;
-        selectedArray.forEach(song =>{
-     
-        if(song.id!=tempID){
-          NewselectedArray.push(song);
-           tempID = song.id;
-        }else{
-        
-            Object.entries( NewselectedArray[0] ).forEach(selected => { 
-              var newselected= selected[0];
+        var tempID = selectedArray[0].id;
+        selectedArray.forEach(song => {
+
+          if (song.id != tempID) {
+            NewselectedArray.push(song);
+            tempID = song.id;
+          } else {
+
+            Object.entries(NewselectedArray[0]).forEach(selected => {
+              var newselected = selected[0];
               //console.log("selected0 : " + newselected );
               //console.log("meme id, infos diff : " + NewselectedArray[0].newselected + " et " + song.newselected)
-                if(NewselectedArray[0].newselected != song.newselected){
-                    song.selected+= " ," + NewselectedArray[0].newselected;
-                    NewselectedArray.splice[NewselectedArray.length];
-                    NewselectedArray.push(song);
-                }
+              if (NewselectedArray[0].newselected != song.newselected) {
+                song.selected += " ," + NewselectedArray[0].newselected;
+                NewselectedArray.splice[NewselectedArray.length];
+                NewselectedArray.push(song);
+              }
             });
-        }
+          }
         });
         selectedArray = NewselectedArray;
 
-        var HTML ="";
+        var HTML = "";
         var firstSong = true;
-      // fusionner id differents 
-       // console.log("selectedArray : " + selectedArray[0]);
+        // fusionner id differents 
+        // console.log("selectedArray : " + selectedArray[0]);
 
 
-       selectedArray.forEach(selected => {
-       var NombreCategories = Object.entries(selected).length;
-       var separateur = 0;
-       var coupleCatVal = "";
-      
-       //console.log("NombreCategories : " + NombreCategories);
-          Object.entries(selected).forEach(category => { 
-           
-            if(!firstSong){
+        selectedArray.forEach(selected => {
+          var NombreCategories = Object.entries(selected).length;
+          var separateur = 0;
+          var coupleCatVal = "";
+
+          //console.log("NombreCategories : " + NombreCategories);
+          Object.entries(selected).forEach(category => {
+
+            if (!firstSong) {
               console.log("firstSong false ");
-              if(separateur%NombreCategories==0){HTML +="<br> --------------------------<br> ";}
-            }else{
+              if (separateur % NombreCategories == 0) { HTML += "<br> --------------------------<br> "; }
+            } else {
               console.log("firstSong true ");
               firstSong = false;
             }
             separateur++;
-            coupleCatVal += category[0] + " : " +  category[1] ;
-             HTML += coupleCatVal +" <br>" ;
-             coupleCatVal = "";
+            coupleCatVal += category[0] + " : " + category[1];
+            HTML += coupleCatVal + " <br>";
+            coupleCatVal = "";
           })
-          console.log("HTML : "+ HTML);
+          console.log("HTML : " + HTML);
 
         })
-        
-          Tooltip
-            // titre en gras
-            .style("stroke", "black")
-            .html(HTML)
-            //.html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.language + "<br> style de musique : " + selected2.id)
-            .style("left", (event.pageX - 240) + "px")
-            .style("top", (event.pageY + 20) + "px")
-            .style("position", "absolute")
-        
+
+        Tooltip
+          // titre en gras
+          .style("stroke", "black")
+          .html(HTML)
+          //.html("The tittle is: " + d +  /*"<br>"+"number of id : "+tmplong.length+"<br>"+"first id length : "+tmplong[0] +*/ " <br> language : " + selected.language + "<br> style de musique : " + selected2.id)
+          .style("left", (event.pageX - 240) + "px")
+          .style("top", (event.pageY + 20) + "px")
+          .style("position", "absolute")
+
 
       }
     }
@@ -683,19 +695,19 @@ export class MyComponent {
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
-      svg.selectAll(".line")
+      self.svg.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "0.1")
         .style("stroke-width", "0.7px")
       // Second the hovered title takes its red
-      svg.selectAll("." + selected_title)
+      self.svg.selectAll("." + selected_title)
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
-        for (var t = 0; t < data1.length; t++) {
-        if (d == data1[t].title) {
-      Tooltip
-        .style("opacity", 1)
+      for (var t = 0; t < self.data1.length; t++) {
+        if (d == self.data1[t].title) {
+          Tooltip
+            .style("opacity", 1)
         }
       }
       d3.select(this)
@@ -704,7 +716,7 @@ export class MyComponent {
 
     }
     const mouseleave = function (event) {
-      svg.selectAll(".line")
+      self.svg.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "1")
         .style("stroke-width", "0.7px")
@@ -716,12 +728,13 @@ export class MyComponent {
     }
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
-      return d3.line()(dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));
+      return d3.line()(self.dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));
     }
     // Draw the lines
-    svg
+    console.log(this.data1)
+    this.svg
       .selectAll("myPath")
-      .data(data1)
+      .data(this.data1)
       .join("path")
       .attr("class", function (d) { return "line " + addslashes(d.title) + " " + addslashes(d.language) + " " + addslashes(d.format) + " " + addslashes(d.genre) + " " + addslashes(d.length) + " " + addslashes(d.isClassic) })
       .attr("d", path)
@@ -731,10 +744,10 @@ export class MyComponent {
 
     // Draw the axis:
 
-    svg.selectAll("myAxis")
+    this.svg.selectAll("myAxis")
       // For each dimension of the dataset I add a 'g' element:
-      .data(dimensions).enter()
-      //TODO: trier liste dimensions selon l'ordre visuel désiré
+      .data(this.dimensions).enter()
+      //TODO: trier liste this.dimensions selon l'ordre visuel désiré
       .append("g")
       //TODO:  voir comment marche join et remplacer append par join où necessaire (réaffichage dynamique de la page)
       // I translate this element to its right position on the x axis
@@ -745,7 +758,7 @@ export class MyComponent {
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
-      .text(function (d) {console.log(d); return d; })
+      .text(function (d) { console.log(d); return d; })
       .style("fill", "black")
 
 
@@ -774,11 +787,11 @@ export class MyComponent {
 
         <div class="tool">
           <svg class="chart" />
-         
+
         </div>
         <div class="add">
           <div class="add2"></div>
-           </div>
+        </div>
       </Host>
     )
   }
