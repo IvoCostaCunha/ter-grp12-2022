@@ -24,6 +24,7 @@ export class MyComponent {
   @State() dimensions;
   @State() categories;
   @State() group;
+  @State() dropdownButton;
   public chartData: any;
 
   componentDidLoad() {
@@ -36,17 +37,18 @@ export class MyComponent {
     
     this.getDataPhaseB(testData);*/
     this.currentArtist = "Queen";
-    this.changeArtistName("Queen");
-    
+    this.analyseData(this.currentArtist);
     console.log(this.dataObj)
     //this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = '<svg class="chart" />';
     this.svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
-    this.group= this.svg.append("div").attr("id", "chartgroup");
+    this.group = this.svg.append("g").attr("id", "chartgroup");
+    this.dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add")[0])
+      .append('div').attr("class", "add2");
     // Extract the list of this.dimensions we want to keep in the plot. Here I keep all except the column called Species
     this.data1 = this.getDataPhaseB(this.dataObj);
     this.dimensions = Object.keys(this.data1[0]).filter(function (d) { return d != "id" })
     this.categories = Object.keys(this.data1[0]);
-   // await this.updateData();
+    // await this.updateData();
     console.log(this.data1)
     this.loadGraph();
   }
@@ -80,15 +82,17 @@ export class MyComponent {
   }
 
   private loadGraph() {
-
+    this.group.remove()
+    this.data1 = this.getDataPhaseB(this.dataObj);
+    this.dropdownButton.remove()
+    this.dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add")[0]).append('div').attr("class", "add2").append("select");
     let divT = select(this.element.shadowRoot.querySelectorAll(".tool")[0])
-    let dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add2")[0])
-      .append('select')
     this.svg = select(this.element.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-      console.log(this.svg)
-    this.buildParalleGraph(divT, dropdownButton);
+    console.log(this.svg)
+    this.group = this.svg.append("g").attr("id", "chartgroup");
+    this.buildParalleGraph(divT, this.dropdownButton);
 
   }
 
@@ -96,7 +100,7 @@ export class MyComponent {
 
     //this.element.shadowRoot.querySelectorAll(".tool")[0].innerHTML = "loading...";
     this.analyseData(artistName);
-
+    this.loadGraph();
   }
 
   private handleSubmit(event: Event) {
@@ -436,6 +440,10 @@ export class MyComponent {
 
   //-------------------------------------- CREATION DU DIAGRAMME ------------------------------------------------------//
   private updateDimension(name) {
+    this.group.remove()
+    this.dropdownButton.remove()
+    this.dropdownButton = select(this.element.shadowRoot.querySelectorAll(".add")[0])
+      .append('div').attr("class", "add2");
     this.dimensions.push(name);
     this.loadGraph();
   }
@@ -445,23 +453,23 @@ export class MyComponent {
       width = 1900 - margin.left - margin.right,
       height = 1000 - margin.top - margin.bottom;
 
-   
+
     var allGroup = ["", "id"]
     // Initialize the button
     // add the options to the button
-    dropdownButton // Add a button
+    this.dropdownButton // Add a button
       .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
       .data(allGroup)
       .enter()
       .append('option')
       .text(function (d) { return d; }) // text showed in the menu
       .attr("value", function (d) { return d; })
-  
-    const self=this
+
+    const self = this
     // When the button is changed, run the updateChart function
-    dropdownButton.on("change",  function(d) {
+    this.dropdownButton.on("change", function (d) {
       // recover the option that has been chosen
-      var selectedOption = d3.select(self).property("value")
+      var selectedOption = d3.select(this).property("value")
 
       // run the updateChart function with this selected option
       if (!self.dimensions.includes(selectedOption) && selectedOption != "") {
@@ -473,7 +481,7 @@ export class MyComponent {
     // For each dimension, I build a linear scale. I store all in a y object
     const y = {}
 
-console.log(this.data1)
+    console.log(this.data1)
     var val = Object.values(this.data1[1]);
     //console.log("this.data1 10 : " , this.data1[1].length);
 
@@ -524,8 +532,6 @@ console.log(this.data1)
       var j = 0;
       const name = this.dimensions[i];
       console.log("name : " + name);
-
-
       if (name == "length") {
         y[name] = d3.scalePoint()// scale point
           .domain(longueur)
@@ -553,7 +559,6 @@ console.log(this.data1)
           .range([height, 20])
       }
       else if (name == "id") {
-
         y[name] = d3.scalePoint()// scale point
           .domain(id) // 
           .range([height, 20])
@@ -695,12 +700,12 @@ console.log(this.data1)
       // verifier si c'est un chiffre si c'est un chiffre return
       const selected_title = addslashes(d)
       // first every group turns grey
-      self.svg.selectAll(".line")
+      self.group.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "0.1")
         .style("stroke-width", "0.7px")
       // Second the hovered title takes its red
-      self.svg.selectAll("." + selected_title)
+      self.group.selectAll("." + selected_title)
         .style("stroke", "#FF0000")
         .style("opacity", "1")
         .style("stroke-width", "3px")
@@ -716,7 +721,7 @@ console.log(this.data1)
 
     }
     const mouseleave = function (event) {
-      self.svg.selectAll(".line")
+      self.group.selectAll(".line")
         .style("stroke", "#69b3a2")
         .style("opacity", "1")
         .style("stroke-width", "0.7px")
@@ -732,7 +737,7 @@ console.log(this.data1)
     }
     // Draw the lines
     console.log(this.data1)
-    this.svg
+    this.group
       .selectAll("myPath")
       .data(this.data1)
       .join("path")
@@ -744,7 +749,7 @@ console.log(this.data1)
 
     // Draw the axis:
 
-    this.svg.selectAll("myAxis")
+    this.group.selectAll("myAxis")
       // For each dimension of the dataset I add a 'g' element:
       .data(this.dimensions).enter()
       //TODO: trier liste this.dimensions selon l'ordre visuel désiré
@@ -755,11 +760,21 @@ console.log(this.data1)
       // And I build the axis with the call function
       .each(function (d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])).selectAll(".tick text").on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave); })
       // Add axis title
+
       .append("text")
       .style("text-anchor", "middle")
       .attr("y", 10)
       .text(function (d) { console.log(d); return d; })
       .style("fill", "black")
+    // .append('select')
+    // .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+    // .data(this.dimensions)
+    // .attr("y", 10)
+    // .enter()
+    // .append('option')
+    // .text(function (d) { return d; }) // text showed in the menu
+    // .attr("value", function (d) { return d; })
+
 
 
 
@@ -790,7 +805,6 @@ console.log(this.data1)
 
         </div>
         <div class="add">
-          <div class="add2"></div>
         </div>
       </Host>
     )
