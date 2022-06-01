@@ -1,6 +1,9 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
+import * as Song from "./Song";
+
+
 @Component({
   tag: 'parallel-graph',
   styleUrl: 'parallel-graph.css',
@@ -390,6 +393,9 @@ export class MyComponent {
     return songsB;
   }
 
+ 
+
+
   // Not functionnal for inside objects yet !
   private printAttributeValues(obj: object, attribute: string): string {
     let value = "";
@@ -631,7 +637,23 @@ export class MyComponent {
 
         NewselectedArray.push(selectedArray[0]);
         var tempID = selectedArray[0].id;
+
+        //fusionne les songs aux id similaires (a check?) pour garder toutes les valeurs de chaque propriété
+        //ici
+        /*
+        var mergedSong = new Song ("","","",null,null,"","");
         selectedArray.forEach(song => {
+          mergedSong = mergedSong.mergeSongs(mergedSong,song);
+
+
+        });
+        
+        selectedArray = [""];
+        selectedArray.push(mergedSong);
+        */
+        selectedArray.forEach(song => {
+
+         
 
           if (song.id != tempID) {
             NewselectedArray.push(song);
@@ -659,6 +681,9 @@ export class MyComponent {
 
 
         selectedArray.forEach(selected => {
+
+      
+
           var NombreCategories = Object.entries(selected).length;
           var separateur = 0;
           var coupleCatVal = "";
