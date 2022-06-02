@@ -1,4 +1,4 @@
-export module App {
+/*export module App {
 class Song {
     id : string;
     title: string;
@@ -10,7 +10,7 @@ class Song {
         
 
    
-    constructor(  Pid :  string,Ptitle: string,Planguage : string,Plength : number ,PisClassic : boolean,Pformat : string,Pgenre : string) {
+    public constructor(  Pid :  string,Ptitle: string,Planguage : string,Plength : number ,PisClassic : boolean,Pformat : string,Pgenre : string) {
         this.id = Pid;
         this.title = Ptitle;
         this.language = Planguage;
@@ -31,4 +31,6 @@ class Song {
     }
   
   }
-}
+
+ 
+}*/

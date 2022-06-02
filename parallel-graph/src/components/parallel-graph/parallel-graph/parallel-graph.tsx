@@ -1,8 +1,7 @@
 import { Element, Component, Host, Prop, h, State } from '@stencil/core';
 import { select } from 'd3-selection';
 import * as d3 from "d3";
-import * as Song from "./Song";
-
+//import * as Song from "./Song";
 
 @Component({
   tag: 'parallel-graph',
@@ -639,9 +638,10 @@ export class MyComponent {
         var tempID = selectedArray[0].id;
 
         //fusionne les songs aux id similaires (a check?) pour garder toutes les valeurs de chaque propriété
-        //ici
+        //TODO: merge songs : nous avons des songs différentes qui sont en réalité la même (même id) cra les données ne contiennent qu'une valeur par catégorie
+        // reste à fix la classe song 
         /*
-        var mergedSong = new Song ("","","",null,null,"","");
+        var mergedSong = new Song("","","",null,null,"","");
         selectedArray.forEach(song => {
           mergedSong = mergedSong.mergeSongs(mergedSong,song);
 
@@ -652,8 +652,6 @@ export class MyComponent {
         selectedArray.push(mergedSong);
         */
         selectedArray.forEach(song => {
-
-         
 
           if (song.id != tempID) {
             NewselectedArray.push(song);
