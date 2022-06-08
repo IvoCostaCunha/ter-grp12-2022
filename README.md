@@ -8,7 +8,7 @@ Représentation dans un parallel coordinates graph des données musicales du ser
 
 ### Installation
 1. Cloner ou télécharger la dernière release de ce git
-2. Se placer dans `cd ter-grp12-2022/parallel-graph`
+2. Se placer dans ter-grp12-2022/parallel-graph `cd ter-grp12-2022/parallel-graph`
 3. Lancer `npm install`
 4. Lancer `npm start`
 
