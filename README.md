@@ -6,12 +6,11 @@ Représentation dans un parallel coordinates graph des données musicales du ser
 ### Pré-requis
 - NodeJS (NPM)
 
-### Installation
+### Installation (dev)
 1. Cloner ou télécharger ce git
 2. Se placer dans ter-grp12-2022/parallel-graph `cd ter-grp12-2022/parallel-graph`
 3. Lancer `npm install`
 4. Lancer `npm start`
 
-
 ### Suivi des réunions
-- https://docs.google.com/document/d/1sAo-qTqyC6j6Sw7aM-uCwzGGTodry7hdYTdaNixLzd4
+- doc/reunions.pdf
